@@ -6,10 +6,10 @@
 { config, pkgs, ... }:
 
 {
-  # 网络与时区
-  networking.hostName = "nixos-sheng";
-  time.timeZone = "Asia/Shanghai";
-  i18n.defaultLocale = "zh_CN.UTF-8";
+  # 网络与时区 (使用 mkForce 强行覆盖上游硬件库中设置的默认值)
+  networking.hostName = pkgs.lib.mkForce "nixos-sheng";
+  time.timeZone = pkgs.lib.mkForce "Asia/Shanghai";
+  i18n.defaultLocale = pkgs.lib.mkForce "zh_CN.UTF-8";
 
   # 字体配置 (如果你需要安装私人中文字体、编程字体等)
   fonts.packages = with pkgs; [
