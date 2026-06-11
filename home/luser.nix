@@ -43,6 +43,9 @@
     shellAliases = {
       ll = "ls -l";
       la = "ls -la";
+      # 覆盖全局 alias，使其永远指向新的私人 dotfiles 仓库
+      nrs = "sudo nixos-rebuild switch --flake /home/luser/sheng-dotfiles#sheng";
+      hms = "home-manager switch --flake /home/luser/sheng-dotfiles#luser@sheng";
     };
   };
 
