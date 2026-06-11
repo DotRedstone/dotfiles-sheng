@@ -46,7 +46,4 @@
   # 你还可以在这里添加其他系统级的服务
   # 比如 SSH、Docker、Tailscale 等
   # services.openssh.enable = true;
-
-  # 不要修改这里的 stateVersion
-  system.stateVersion = "24.05";
 }
