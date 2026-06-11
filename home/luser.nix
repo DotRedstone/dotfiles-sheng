@@ -22,8 +22,9 @@
     fzf
     
     # 常用应用
-    # firefox
-    # neofetch
+    firefox
+    gnome.gnome-system-monitor # GNOME 原生的系统监视器 (带图形界面)
+    btop # 最强悍酷炫的终端性能监视工具
   ];
 
   # Git 配置
