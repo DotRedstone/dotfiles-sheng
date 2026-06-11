@@ -21,7 +21,7 @@
     jdk21   # 适用于 1.20.5 及以上最新版本
     
     # 依赖工具（有些 Mod 或者启动器需要用到）
-    xorg.xrandr
+    xrandr
     glfw
     openal
   ];

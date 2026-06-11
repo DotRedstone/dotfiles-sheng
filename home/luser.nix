@@ -29,10 +29,14 @@
   # Git 配置
   programs.git = {
     enable = true;
-    userName = "luser";
-    userEmail = "luser@example.com";
-    extraConfig = {
-      init.defaultBranch = "main";
+    settings = {
+      user = {
+        name = "luser";
+        email = "luser@example.com";
+      };
+      init = {
+        defaultBranch = "main";
+      };
     };
   };
 
