@@ -34,12 +34,12 @@
       ];
     };
 
-    # Home Manager 配置：可以通过 `home-manager switch --flake .#dot@sheng` 部署
-    homeConfigurations."dot@sheng" = home-manager.lib.homeManagerConfiguration {
+    # Home Manager 配置：可以通过 `home-manager switch --flake .#luser@sheng` 部署
+    homeConfigurations."luser@sheng" = home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = { inherit inputs; };
       modules = [
-        ./home/dot.nix
+        ./home/luser.nix
       ];
     };
   };

@@ -6,7 +6,7 @@ nrs:
 
 # home-manager switch: 部署用户级的应用和环境（不需要 root）
 hms:
-	home-manager switch --flake .#dot@sheng
+	home-manager switch --flake .#luser@sheng
 
 # 更新 inputs（比如拉取上游 xiaomi-sheng 的最新硬件修复）
 update:
