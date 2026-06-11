@@ -11,8 +11,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # 直接引用远程 GitHub 上的硬件仓库，这样你在平板上拉取后开箱即用，不需要再克隆一次底层仓库
-    xiaomi-sheng.url = "github:DotRedstone/nixos-xiaomi-sheng";
+    # 直接引用远程 GitHub 上的硬件仓库，并指定 flake.nix 所在的子目录
+    xiaomi-sheng.url = "github:DotRedstone/nixos-xiaomi-sheng?dir=nixos";
   };
 
   outputs = { self, nixpkgs, home-manager, xiaomi-sheng, ... }@inputs: 
