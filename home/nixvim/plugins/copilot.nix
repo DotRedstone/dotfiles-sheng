@@ -1,15 +1,13 @@
 # ---
 # Module: NixVim - Copilot
-# Description: GitHub Copilot core and Chat integration
+# Description: GitHub Copilot core and chat integration
 # Scope: Home Manager
 # ---
 
 { ... }: {
   programs.nixvim.plugins = {
-    # [Service]
     copilot-lua = {
       enable = true;
-      copilotNodeCommand = "node --no-warnings";
       settings = {
         suggestion.enabled = false;
         panel.enabled = false;
@@ -20,14 +18,13 @@
       };
     };
 
-    # [Chat]
     copilot-chat = {
       enable = true;
       settings = {
         show_help = true;
-        question_header = "  User ";
-        answer_header = "  Copilot ";
-        error_header = "󰚑  Error ";
+        question_header = "User ";
+        answer_header = "Copilot ";
+        error_header = "Error ";
         separator = " ";
         prompts = {
           Explain = "Please explain the following code.";
@@ -41,19 +38,18 @@
     };
   };
 
-  # [Keybindings]
   programs.nixvim.keymaps = [
     {
       mode = "n";
       key = "<leader>cc";
       action = "<cmd>CopilotChatToggle<cr>";
-      options = { desc = "开启/关闭 Copilot 聊天"; };
+      options = { desc = "Toggle Copilot Chat"; };
     }
     {
       mode = "v";
       key = "<leader>ce";
       action = "<cmd>CopilotChatExplain<cr>";
-      options = { desc = "Copilot 解释代码"; };
+      options = { desc = "Explain with Copilot"; };
     }
   ];
 }
