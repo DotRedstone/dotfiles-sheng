@@ -35,21 +35,22 @@ in
       monospace = [ "Maple Mono NF" "Sarasa Mono SC" "Noto Sans Mono CJK SC" ];
       emoji = [ "Noto Color Emoji" ];
     };
-    localConf = ''
-      <?xml version="1.0"?>
-      <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-      <fontconfig>
-        <match target="pattern">
-          <test name="lang">
-            <string>zh-cn</string>
-          </test>
-          <edit name="family" mode="prepend">
-            <string>LXGW Neo XiHei</string>
-          </edit>
-        </match>
-      </fontconfig>
-    '';
   };
+
+  xdg.configFile."fontconfig/conf.d/20-sheng-zh-cn-fonts.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+      <match target="pattern">
+        <test name="lang">
+          <string>zh-cn</string>
+        </test>
+        <edit name="family" mode="prepend">
+          <string>LXGW Neo XiHei</string>
+        </edit>
+      </match>
+    </fontconfig>
+  '';
 
   home.packages = with pkgs; [
     maple-mono.NF
