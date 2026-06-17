@@ -8,6 +8,7 @@
   imports = [
     ./apps/minecraft
     ./gnome
+    ./dev
     ./cli-tools
     ./fish
     ./starship

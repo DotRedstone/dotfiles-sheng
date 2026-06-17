@@ -8,8 +8,8 @@
   programs.nixvim = {
     enable = true;
     defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
+    viAlias = false;
+    vimAlias = false;
 
     withPython3 = true;
     withRuby = false;
