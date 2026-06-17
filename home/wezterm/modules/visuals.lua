@@ -9,7 +9,6 @@ local M = {}
 function M.apply(config, wezterm)
   -- [Visuals & Typography]
   config.font = wezterm.font_with_fallback({
-    { family = 'Noto Sans Mono CJK SC', weight = 'Regular' },
     { family = 'Maple Mono NF', weight = 'Regular' },
     { family = 'Noto Sans CJK SC', weight = 'Regular' },
     { family = 'Symbols Nerd Font Mono', weight = 'Regular' },

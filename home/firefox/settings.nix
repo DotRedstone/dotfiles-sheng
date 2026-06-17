@@ -18,15 +18,15 @@
     "sidebar.revamp" = true;
 
     # [Typography]
-    # Use fonts that are shipped by the sheng GNOME profile.
-    "font.name.sans-serif.zh-CN" = "Noto Sans CJK SC";
-    "font.name.serif.zh-CN" = "Noto Serif CJK SC";
-    "font.name.monospace.zh-CN" = "Noto Sans Mono CJK SC";
+    # Mirror the main dotfiles font stack: Inter/LXGW for text, Maple for code.
+    "font.name.sans-serif.zh-CN" = "LXGW Neo XiHei";
+    "font.name.serif.zh-CN" = "LXGW WenKai";
+    "font.name.monospace.zh-CN" = "Maple Mono NF";
     "font.default.zh-CN" = "sans-serif";
 
-    "font.name.sans-serif.x-western" = "Noto Sans";
-    "font.name.serif.x-western" = "Noto Serif";
-    "font.name.monospace.x-western" = "Noto Sans Mono";
+    "font.name.sans-serif.x-western" = "Inter";
+    "font.name.serif.x-western" = "LXGW WenKai";
+    "font.name.monospace.x-western" = "Maple Mono NF";
     "font.default.x-western" = "sans-serif";
 
     # [Downloads]

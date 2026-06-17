@@ -27,9 +27,22 @@ in
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
   };
 
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig = {
+    enable = true;
+    defaultFonts = {
+      sansSerif = [ "Inter" "LXGW Neo XiHei" "Noto Sans CJK SC" ];
+      serif = [ "LXGW WenKai" "Noto Serif CJK SC" ];
+      monospace = [ "Maple Mono NF" "Sarasa Mono SC" "Noto Sans Mono CJK SC" ];
+      emoji = [ "Noto Color Emoji" ];
+    };
+  };
 
   home.packages = with pkgs; [
+    maple-mono.NF
+    inter
+    lxgw-neoxihei
+    lxgw-wenkai
+    sarasa-gothic
     noto-fonts
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
@@ -42,8 +55,8 @@ in
   gtk = {
     enable = true;
     font = {
-      name = "Noto Sans CJK SC";
-      size = 11;
+      name = "Maple Mono NF";
+      size = 12;
     };
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
@@ -60,10 +73,10 @@ in
       color-scheme = "prefer-dark";
       clock-show-weekday = true;
       cursor-size = 32;
-      document-font-name = "Noto Serif CJK SC 11";
+      document-font-name = "Maple Mono NF 12";
       enable-animations = true;
-      font-name = "Noto Sans CJK SC 11";
-      monospace-font-name = "Noto Sans Mono CJK SC 11";
+      font-name = "Maple Mono NF 12";
+      monospace-font-name = "Maple Mono NF 12";
       show-battery-percentage = true;
       text-scaling-factor = 1.15;
       toolbar-icons-size = "large";
