@@ -4,7 +4,9 @@
 # Scope: Home Manager
 # ---
 
-{ ... }: {
+{ inputs, ... }: {
+  programs.nixvim.nixpkgs.source = inputs.nixpkgs;
+
   imports = [
     ./packages.nix
     ./core.nix
