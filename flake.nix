@@ -13,7 +13,14 @@
 
     # 引用公开发布版的 sheng 硬件仓库。普通用户只需要 clone 本仓库，
     # 不需要在本地额外 clone nixos-xiaomi-sheng。
-    xiaomi-sheng.url = "github:DotRedstone/nixos-xiaomi-sheng/v0.1.1?dir=nixos";
+    xiaomi-sheng = {
+      url = "github:DotRedstone/nixos-xiaomi-sheng/v0.1.1?dir=nixos";
+      inputs.shengFirmware.follows = "shengFirmware";
+    };
+
+    # 避免在设备上通过 GitHub tarball 拉取大固件仓库时遇到截断缓存。
+    shengFirmware.url =
+      "git+https://github.com/DotRedstone/sheng-firmware-full.git?rev=719086ce25222dcc54920ae12409eb5d4401bbff";
   };
 
   outputs = { self, nixpkgs, home-manager, xiaomi-sheng, ... }@inputs: 

@@ -18,6 +18,10 @@ nix flake update
 sudo nixos-rebuild switch --flake .#sheng
 ```
 
+If Nix reports `Truncated tar archive` while fetching firmware, pull the latest
+dotfiles and run `nix flake update` again. This repository overrides the
+firmware input to use `git+https` instead of GitHub tarball downloads.
+
 The public rootfs may still provide an old `nrs` shortcut pointing to the
 upstream development checkout. For the first deploy, use the full
 `nixos-rebuild` command above or run:
