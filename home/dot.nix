@@ -55,8 +55,6 @@
     enable = true;
     enableCompletion = true;
     shellAliases = {
-      ll = "ls -l";
-      la = "ls -la";
       # 在 dotfiles 仓库目录内使用，避免依赖固定的 clone 路径。
       nrs = "sudo nixos-rebuild switch --flake .#sheng";
       hms = "home-manager switch --flake .#dot@sheng";
