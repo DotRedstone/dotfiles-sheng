@@ -137,16 +137,6 @@
     jdtls = {
       enable = true;
       package = pkgs.jdt-language-server;
-      rootMarkers = [
-        "pom.xml"
-        "build.gradle"
-        "build.gradle.kts"
-        "settings.gradle"
-        "settings.gradle.kts"
-        "mvnw"
-        "gradlew"
-        ".git"
-      ];
     };
 
     venv-selector.enable = true;
