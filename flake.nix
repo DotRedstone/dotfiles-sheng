@@ -11,8 +11,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # 直接引用远程 GitHub 上的硬件仓库，并指定 flake.nix 所在的子目录
-    xiaomi-sheng.url = "github:DotRedstone/nixos-xiaomi-sheng?dir=nixos";
+    # 引用公开发布版的 sheng 硬件仓库。普通用户只需要 clone 本仓库，
+    # 不需要在本地额外 clone nixos-xiaomi-sheng。
+    xiaomi-sheng.url = "github:DotRedstone/nixos-xiaomi-sheng/v0.1.1?dir=nixos";
   };
 
   outputs = { self, nixpkgs, home-manager, xiaomi-sheng, ... }@inputs: 
