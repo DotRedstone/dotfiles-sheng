@@ -14,15 +14,16 @@ function M.apply(config, _)
   config.tab_bar_at_bottom = false
   config.window_decorations = "TITLE | RESIZE"
   config.window_padding = {
-    left = "1.5cell",
-    right = "1.5cell",
-    top = "1cell",
-    bottom = "1cell",
+    left = "1.75cell",
+    right = "1.75cell",
+    top = "1.15cell",
+    bottom = "1.15cell",
   }
   config.window_close_confirmation = "AlwaysPrompt"
   config.adjust_window_size_when_changing_font_size = false
   config.initial_cols = 96
   config.initial_rows = 28
+  config.enable_scroll_bar = true
 end
 
 return M

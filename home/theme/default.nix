@@ -128,7 +128,34 @@ return {
       fg_color = "{{colors.primary.default.hex}}",
     },
   },
+  window_frame = {
+    active_titlebar_bg = "{{colors.surface_container.default.hex}}",
+    inactive_titlebar_bg = "{{colors.surface_container_low.default.hex}}",
+    active_titlebar_fg = "{{colors.on_surface.default.hex}}",
+    inactive_titlebar_fg = "{{colors.on_surface_variant.default.hex}}",
+    button_fg = "{{colors.on_surface.default.hex}}",
+    button_bg = "{{colors.surface_container.default.hex}}",
+    button_hover_fg = "{{colors.on_primary_container.default.hex}}",
+    button_hover_bg = "{{colors.primary_container.default.hex}}",
+  },
 }
+EOF
+
+    cat > $out/gtk.css <<'EOF'
+@define-color accent_color {{colors.primary.default.hex}};
+@define-color accent_bg_color {{colors.primary.default.hex}};
+@define-color accent_fg_color {{colors.on_primary.default.hex}};
+@define-color destructive_color {{colors.error.default.hex}};
+@define-color destructive_bg_color {{colors.error.default.hex}};
+@define-color destructive_fg_color {{colors.on_error.default.hex}};
+@define-color window_bg_color {{colors.surface.default.hex}};
+@define-color window_fg_color {{colors.on_surface.default.hex}};
+@define-color view_bg_color {{colors.surface.default.hex}};
+@define-color view_fg_color {{colors.on_surface.default.hex}};
+@define-color headerbar_bg_color {{colors.surface_container.default.hex}};
+@define-color headerbar_fg_color {{colors.on_surface.default.hex}};
+@define-color card_bg_color {{colors.surface_container.default.hex}};
+@define-color card_fg_color {{colors.on_surface.default.hex}};
 EOF
 
     cat > $out/starship.toml <<'EOF'
@@ -257,6 +284,14 @@ EOF
     input_path = "${matugenTemplates}/wezterm.lua"
     output_path = "/home/dot/.config/wezterm/sheng-theme.lua"
 
+    [templates.gtk4_css]
+    input_path = "${matugenTemplates}/gtk.css"
+    output_path = "/home/dot/.config/gtk-4.0/gtk.css"
+
+    [templates.gtk3_css]
+    input_path = "${matugenTemplates}/gtk.css"
+    output_path = "/home/dot/.config/gtk-3.0/gtk.css"
+
     [templates.starship]
     input_path = "${matugenTemplates}/starship.toml"
     output_path = "/home/dot/.cache/sheng-theme/starship.toml"
@@ -333,6 +368,50 @@ PY
         magick "$image" -resize 1x1\! txt:- \
           | grep -Eom1 '#[0-9A-Fa-f]{6}' \
           | tr '[:upper:]' '[:lower:]'
+      }
+
+      sync_gnome_accent() {
+        local palette="$cache_dir/colors.json"
+        [ -s "$palette" ] || return 0
+        command -v gsettings >/dev/null 2>&1 || return 0
+        if [ -z "''${DBUS_SESSION_BUS_ADDRESS:-}" ] && [ -S "/run/user/$(id -u)/bus" ]; then
+          DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+          export DBUS_SESSION_BUS_ADDRESS
+        fi
+        gsettings writable org.gnome.desktop.interface accent-color >/dev/null 2>&1 || return 0
+
+        local accent_name
+        accent_name="$(
+          python3 - "$palette" <<'PY'
+import colorsys
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    primary = json.load(handle).get("primary", "#cba6f7").lstrip("#")
+
+r, g, b = [int(primary[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+hue = colorsys.rgb_to_hsv(r, g, b)[0] * 360
+
+accents = [
+    ("red", 0),
+    ("orange", 30),
+    ("yellow", 55),
+    ("green", 125),
+    ("teal", 175),
+    ("blue", 220),
+    ("purple", 275),
+    ("pink", 325),
+]
+
+def distance(a, b):
+    diff = abs(a - b) % 360
+    return min(diff, 360 - diff)
+
+print(min(accents, key=lambda item: distance(hue, item[1]))[0])
+PY
+        )"
+        gsettings set org.gnome.desktop.interface accent-color "'$accent_name'" >/dev/null 2>&1 || true
       }
 
       fallback_palette() {
@@ -423,6 +502,7 @@ PY
         if ! run_matugen_color "$color"; then
           fallback_palette "$color"
         fi
+        sync_gnome_accent
         printf '%s\n' "$color" | wl-copy 2>/dev/null || true
         notify-send "Sheng theme" "Material You palette generated from $color" 2>/dev/null || true
         echo "Generated sheng palette from $color"
@@ -441,6 +521,7 @@ PY
             color="$(average_color_from_image "$image")"
             fallback_palette "$color"
           fi
+          sync_gnome_accent
           if command -v gsettings >/dev/null 2>&1; then
             gsettings set org.gnome.desktop.background picture-uri "file://$image" >/dev/null 2>&1 || true
             gsettings set org.gnome.desktop.background picture-uri-dark "file://$image" >/dev/null 2>&1 || true

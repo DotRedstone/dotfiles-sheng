@@ -1,6 +1,6 @@
 -- ---
 -- Module: WezTerm - Visuals
--- Description: Font stack, opacity, and cursor animation settings
+-- Description: Font stack, subtle transparency, and cursor animation settings
 -- Scope: Home Manager
 -- ---
 
@@ -14,7 +14,8 @@ function M.apply(config, wezterm)
     { family = 'Symbols Nerd Font Mono', weight = 'Regular' },
   })
   config.font_size = 14
-  config.window_background_opacity = 1.0
+  config.window_background_opacity = 0.94
+  config.text_background_opacity = 1.0
 
   -- [Animation & Cursor]
   config.default_cursor_style = "BlinkingBar"
