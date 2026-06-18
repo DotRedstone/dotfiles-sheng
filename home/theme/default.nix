@@ -574,6 +574,9 @@ in
       package = pkgs.bibata-cursors;
       size = 32;
     };
+    # Keep libadwaita/GTK4 apps on GNOME's native theme so Settings can render
+    # accent-color previews correctly. GTK3 still uses adw-gtk3 above.
+    gtk4.theme = null;
   };
 
   home.pointerCursor = {
