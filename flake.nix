@@ -16,10 +16,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # 引用公开发布版的 sheng 硬件仓库。普通用户只需要 clone 本仓库，
+    # 引用 sheng 硬件仓库。普通用户只需要 clone 本仓库，
     # 不需要在本地额外 clone nixos-xiaomi-sheng。
     xiaomi-sheng = {
-      url = "github:DotRedstone/nixos-xiaomi-sheng/v0.1.1?dir=nixos";
+      url = "github:DotRedstone/nixos-xiaomi-sheng/sheng?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
