@@ -13,7 +13,7 @@
       pkgs.qt6Packages.fcitx5-chinese-addons
       pkgs.qt6Packages.fcitx5-configtool
       pkgs.fcitx5-gtk
-      pkgs.qt6Packages.fcitx5-rime
+      pkgs.fcitx5-rime
     ];
   };
 }
