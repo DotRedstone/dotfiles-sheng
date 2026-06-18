@@ -22,8 +22,8 @@ let
     postBuild = ''
       wrapProgram $out/bin/prismlauncher \
         --set QT_QPA_PLATFORM xcb \
-        --set QT_IM_MODULE fcitx \
-        --set XMODIFIERS @im=fcitx
+        --set QT_IM_MODULE ibus \
+        --set XMODIFIERS @im=ibus
     '';
   };
 in

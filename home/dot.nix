@@ -17,7 +17,7 @@
     ./zellij
     ./wezterm
     ./firefox
-    ./fcitx5
+    ./ibus
     ./nautilus
     ./telegram
     ./wechat
