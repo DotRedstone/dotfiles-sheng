@@ -12,14 +12,16 @@ function M.apply(config, _)
   config.hide_tab_bar_if_only_one_tab = false
   config.use_fancy_tab_bar = true
   config.tab_bar_at_bottom = false
-  config.window_decorations = "TITLE | RESIZE"
+  config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
+  config.integrated_title_button_style = "Gnome"
+  config.integrated_title_button_alignment = "Right"
   config.window_padding = {
     left = "1.75cell",
     right = "1.75cell",
     top = "1.15cell",
     bottom = "1.15cell",
   }
-  config.window_close_confirmation = "AlwaysPrompt"
+  config.window_close_confirmation = "NeverPrompt"
   config.adjust_window_size_when_changing_font_size = false
   config.initial_cols = 96
   config.initial_rows = 28

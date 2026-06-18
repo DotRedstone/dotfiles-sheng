@@ -24,8 +24,8 @@
     "font.name.monospace.zh-CN" = "FZYJHK B";
     "font.default.zh-CN" = "sans-serif";
 
-    "font.name.sans-serif.x-western" = "Inter";
-    "font.name.serif.x-western" = "FZYJHK B";
+    "font.name.sans-serif.x-western" = "Maple Mono NF";
+    "font.name.serif.x-western" = "Maple Mono NF";
     "font.name.monospace.x-western" = "Maple Mono NF";
     "font.default.x-western" = "sans-serif";
 

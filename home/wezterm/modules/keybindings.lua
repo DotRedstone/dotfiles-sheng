@@ -15,8 +15,9 @@ function M.apply(config, wezterm)
     { key = 'P', mods = 'CTRL|SHIFT', action = act.ActivateCommandPalette },
     { key = 'N', mods = 'CTRL|SHIFT', action = act.SpawnWindow },
     { key = 'W', mods = 'CTRL|SHIFT', action = act.CloseCurrentTab{ confirm = true } },
-    -- GNOME's on-screen keyboard may emit Delete where terminal apps expect Backspace.
-    { key = 'Delete', mods = 'NONE', action = act.SendKey{ key = 'Backspace' } },
+    -- GNOME's on-screen keyboard often emits Delete; terminal apps expect DEL.
+    { key = 'Backspace', mods = 'NONE', action = act.SendString('\x7f') },
+    { key = 'Delete', mods = 'NONE', action = act.SendString('\x7f') },
   }
 end
 
