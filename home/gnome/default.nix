@@ -103,6 +103,16 @@ in
 
     "org/gnome/desktop/a11y/applications" = {
       screen-keyboard-enabled = true;
+      screen-magnifier-enabled = false;
+      screen-reader-enabled = false;
+    };
+
+    "org/gnome/desktop/a11y/keyboard" = {
+      bouncekeys-enable = false;
+      mousekeys-enable = false;
+      slowkeys-enable = false;
+      stickykeys-enable = false;
+      togglekeys-enable = false;
     };
 
     "org/gnome/desktop/peripherals/touchpad" = {
