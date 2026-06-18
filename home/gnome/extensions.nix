@@ -22,17 +22,6 @@ in
   };
 
   dconf.settings = {
-    "org/gnome/shell" = {
-      enabled-extensions = [
-        "appindicatorsupport@rgcjonas.gmail.com"
-        "caffeine@patapon.info"
-        "dash-to-dock@micxgx.gmail.com"
-        "quick-settings-tweaks@qwreey"
-        "tiling-assistant@leleat-on-github"
-        "touchup@mityax"
-      ];
-    };
-
     "org/gnome/shell/extensions/touchup" = {
       navigation-bar-enabled = true;
       navigation-bar-mode = "gestures";
