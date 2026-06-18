@@ -53,6 +53,10 @@ let
   ];
 in
 {
+  home.packages = [
+    gjsOsk
+  ];
+
   programs.gnome-shell = {
     enable = true;
     extensions = map (package: { inherit package; }) extensions;
