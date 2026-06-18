@@ -9,6 +9,10 @@ let
   inherit (lib.hm.gvariant) mkTuple mkUint32;
 in
 {
+  imports = [
+    ./rime.nix
+  ];
+
   home.sessionVariables = {
     GTK_IM_MODULE = "ibus";
     QT_IM_MODULE = "ibus";
@@ -28,10 +32,10 @@ in
   dconf.settings."org/gnome/desktop/input-sources" = {
     sources = [
       (mkTuple [ "xkb" "us" ])
-      (mkTuple [ "ibus" "libpinyin" ])
+      (mkTuple [ "ibus" "rime" ])
     ];
     mru-sources = [
-      (mkTuple [ "ibus" "libpinyin" ])
+      (mkTuple [ "ibus" "rime" ])
       (mkTuple [ "xkb" "us" ])
     ];
     current = mkUint32 0;

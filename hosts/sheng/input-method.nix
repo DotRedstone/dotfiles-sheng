@@ -1,6 +1,6 @@
 # ---
 # Module: Chinese Input Method
-# Description: Provide IBus with libpinyin for the GNOME touch keyboard
+# Description: Provide IBus with Rime for the GNOME touch keyboard
 # Scope: Host
 # ---
 { pkgs, ... }:
@@ -10,7 +10,7 @@
     enable = true;
     type = "ibus";
     ibus.engines = with pkgs.ibus-engines; [
-      libpinyin
+      rime
     ];
   };
 }
