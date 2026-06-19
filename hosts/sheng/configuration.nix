@@ -33,8 +33,8 @@
   # 覆盖公开 rootfs 里面面向上游开发仓库的旧快捷命令。
   # 使用时先 cd 到本 dotfiles 仓库，再执行 nrs / hms。
   environment.shellAliases = {
-    nrs = "nh os switch ~/sheng-dotfiles";
-    hms = "nh home switch ~/sheng-dotfiles";
+    nrs = "nh os switch ~/sheng-dotfiles#sheng";
+    hms = "nh home switch ~/sheng-dotfiles#dot@sheng";
   };
 
   # === 彻底隐藏上游的默认配置 ===

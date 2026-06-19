@@ -107,15 +107,15 @@
       gundo = "git reset --soft HEAD~1";
 
       # --- NixOS Management (nh/nrs) ---
-      nrs    = "nh os switch";
-      nrb    = "nh os boot";
+      nrs    = "nh os switch ~/sheng-dotfiles#sheng";
+      nrb    = "nh os boot ~/sheng-dotfiles#sheng";
       nsl    = "sudo nix-env -p /nix/var/nix/profiles/system --list-generations";
       nsd    = "sudo nix-env -p /nix/var/nix/profiles/system --delete-generations";
       nclean = "nh clean all --keep 5";
       nconf  = "cd ~/sheng-dotfiles && nvim";
 
       # --- Home Manager (nh/hms) ---
-      hms = "nh home switch";
+      hms = "nh home switch ~/sheng-dotfiles#dot@sheng";
       hml = "home-manager generations";
       hme = "home-manager expire-generations \"-0 days\"";
 
