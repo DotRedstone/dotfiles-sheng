@@ -7,7 +7,7 @@
 
 {
   # 网络与时区 (使用 mkForce 强行覆盖上游硬件库中设置的默认值)
-  networking.hostName = pkgs.lib.mkForce "nixos-sheng";
+  networking.hostName = pkgs.lib.mkForce "sheng";
   time.timeZone = pkgs.lib.mkForce "Asia/Shanghai";
   i18n.defaultLocale = pkgs.lib.mkForce "zh_CN.UTF-8";
 
