@@ -165,7 +165,8 @@ EOF
     cat > $out/starship.toml <<'EOF'
 palette = "sheng"
 add_newline = false
-format = "$username$hostname $directory $git_branch$git_status$cmd_duration\n$character"
+
+format = """${custom.user_host_noenv}${custom.user_host_env} 󰜥 $directory $git_branch$cmd_duration\n$direnv${custom.venv}$nodejs$rust$golang$c${custom.status_dot}$character"""
 
 [palettes.sheng]
 primary = "{{colors.primary.default.hex}}"
@@ -175,42 +176,91 @@ error = "{{colors.error.default.hex}}"
 surface = "{{colors.surface.default.hex}}"
 on_surface = "{{colors.on_surface.default.hex}}"
 
+[custom.user_host_noenv]
+when = 'test -z "$VIRTUAL_ENV" && test -z "$DIRENV_DIR" && test ! -f package.json && test ! -f Cargo.toml && test ! -f go.mod'
+command = 'echo "dot•sheng"'
+format = "[](bold primary)[$output](bold bg:primary fg:235)[](bold primary)"
+
+[custom.user_host_env]
+when = 'test -n "$VIRTUAL_ENV" || test -n "$DIRENV_DIR" || test -f package.json || test -f Cargo.toml || test -f go.mod'
+command = 'echo "dot•sheng"'
+format = "[](bold tertiary)[$output](bold bg:tertiary fg:235)[](bold tertiary)"
+
 [username]
-show_always = true
-format = "[$user]($style)"
-style_user = "bold primary"
-
+disabled = true
 [hostname]
-ssh_only = false
-format = "[@$hostname](bold tertiary)"
-
-[directory]
-style = "bold secondary"
-truncation_length = 5
-truncate_to_repo = false
-
-[directory.substitutions]
-"sheng-dotfiles" = "sheng-dotfiles"
-"Downloads" = "Downloads"
-"Documents" = "Documents"
-"Pictures" = "Pictures"
-
-[git_branch]
-symbol = "git:"
-format = " [$symbol$branch]($style)"
-style = "bold primary"
-
-[git_status]
-format = " [$all_status$ahead_behind]($style)"
-style = "bold tertiary"
+disabled = true
 
 [cmd_duration]
-min_time = 1000
-format = " [$duration](secondary)"
+min_time = 0
+format = " [](bold tertiary)[󰪢 $duration](bold bg:tertiary fg:235)[](bold tertiary)"
+disabled = false
+
+[direnv]
+format = "[](bold primary)[ ](bold bg:primary fg:235)[](bold primary) "
+style = "bold"
+disabled = false
+
+[custom.venv]
+when = 'test -n "$VIRTUAL_ENV"'
+command = 'basename "$VIRTUAL_ENV"'
+format = "[](bold primary)[󰌠 $output](bold bg:primary fg:235)[](bold primary) "
+
+[nodejs]
+format = "[](bold primary)[󰎙 $version](bold bg:primary fg:235)[](bold primary) "
+detect_files = ["package.json", ".node-version", ".nvmrc"]
+style = "bold"
+
+[rust]
+format = "[](bold primary)[󱘗 $version](bold bg:primary fg:235)[](bold primary) "
+style = "bold"
+
+[golang]
+format = "[](bold primary)[󰟓 $version](bold bg:primary fg:235)[](bold primary) "
+style = "bold"
+
+[c]
+format = "[](bold primary)[ $version](bold bg:primary fg:235)[](bold primary) "
+style = "bold"
+
+[directory]
+style = "bold bg:secondary fg:235"
+truncation_length = 6
+truncation_symbol = " ••/"
+home_symbol = "  "
+read_only = "  "
+format = "[](bold secondary)[󰉋 $path]($style)[](bold secondary)"
+
+[directory.substitutions]
+"Desktop" = "  "
+"Documents" = "  "
+"Downloads" = "  "
+"Music" = " 󰎈 "
+"Pictures" = "  "
+"Videos" = "  "
+"GitHub" = " 󰊤 "
+"sheng-dotfiles" = "  "
+
+[git_branch]
+style = "bold bg:primary fg:235"
+symbol = "󰘬"
+truncation_length = 12
+format = "[](bold primary)[$symbol $branch$all_status]($style)[](bold primary)"
+
+[git_status]
+disabled = false
+
+[custom.status_dot]
+when = 'test -z "$VIRTUAL_ENV" && test -z "$DIRENV_DIR" && test ! -f package.json && test ! -f Cargo.toml && test ! -f go.mod'
+command = 'echo ""'
+format = "[$output ](bold primary)"
 
 [character]
-success_symbol = "[>](bold primary)"
-error_symbol = "[>](bold error)"
+success_symbol = "[](bold primary)"
+error_symbol = "[ ](bold error)"
+
+[package]
+disabled = true
 EOF
 
     cat > $out/zellij.kdl <<'EOF'
