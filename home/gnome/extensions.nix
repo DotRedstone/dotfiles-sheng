@@ -113,7 +113,7 @@ in
       indicator-enabled = true;
       enable-tap-gesture = 1;
       enable-key-repeat = true;
-      key-repeat-rate = 70;
+      key-repeat-rate = 71;
       play-sound = true;
       show-icons = true;
       round-key-corners = true;
