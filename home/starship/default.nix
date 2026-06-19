@@ -1,15 +1,18 @@
 # ---
 # Module: Starship
-# Description: Minimalist static shell prompt for sheng
+# Description: Minimalist shell prompt with Noctalia dynamic theme integration
 # Scope: Home Manager
 # ---
 
-{ ... }: {
+{ config, lib, ... }: {
 
   programs.starship = {
     enable = true;
     enableFishIntegration = true;
   };
 
-  xdg.configFile."starship.toml".source = ./starship.toml.template;
+  # Load static starship toml
+  xdg.configFile."starship.toml" = {
+    source = ./starship.toml;
+  };
 }

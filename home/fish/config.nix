@@ -21,9 +21,9 @@
       fish_vi_key_bindings
       # [Environment Variables]
       set -gx NH_NOM 1     # Enable pretty output for NH
-      set -gx NH_FLAKE /home/dot/sheng-dotfiles
+      set -gx NH_FLAKE ~/sheng-dotfiles # Standard flake for NH
       set -gx NH_SEARCH_CHANNEL nixpkgs-unstable # Try to fix nh search
-
+      
       # FZF with Bat preview
       set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --border --preview 'bat --style=numbers --color=always --line-range :500 {}'"
 
