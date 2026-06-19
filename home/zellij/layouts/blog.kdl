@@ -13,16 +13,16 @@ layout {
         pane split_direction="vertical" {
             pane split_direction="horizontal" size="34%" {
                 pane name="Terminal" size="45%" command="fish" {
-                    args "-lc" "cd ~/sheng-dotfiles && exec fish"
+                    args "-lc" "cd ~/dotfiles-sheng && exec fish"
                 }
 
                 pane name="Agent" size="55%" command="fish" {
-                    args "-lc" "cd ~/sheng-dotfiles && exec opencode"
+                    args "-lc" "cd ~/dotfiles-sheng && exec opencode"
                 }
             }
 
             pane name="Editor" size="66%" command="nvim" {
-                args "~/sheng-dotfiles"
+                args "~/dotfiles-sheng"
             }
         }
     }

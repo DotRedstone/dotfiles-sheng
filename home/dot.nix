@@ -51,8 +51,8 @@
     enable = true;
     enableCompletion = true;
     shellAliases = {
-      nrs = "nh os switch ~/sheng-dotfiles -H sheng";
-      hms = "nh home switch ~/sheng-dotfiles -c dot@sheng";
+      nrs = "nh os switch ~/dotfiles-sheng -H sheng";
+      hms = "nh home switch ~/dotfiles-sheng -c dot@sheng";
     };
   };
 

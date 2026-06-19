@@ -30,7 +30,7 @@
     "file://${config.home.homeDirectory}/Videos 视频"
     "file://${config.home.homeDirectory}/Documents 文档"
     "file://${config.home.homeDirectory}/Music 音乐"
-    "file://${config.home.homeDirectory}/sheng-dotfiles Sheng Dotfiles"
+    "file://${config.home.homeDirectory}/dotfiles-sheng Sheng Dotfiles"
   ];
 
   xdg.mimeApps = {

@@ -12,11 +12,11 @@ layout {
     tab name="Code" {
         pane split_direction="vertical" {
             pane name="opencode" size="35%" command="opencode" {
-                cwd "~/sheng-dotfiles"
+                cwd "~/dotfiles-sheng"
             }
 
             pane name="nixvim" size="65%" command="nvim" {
-                cwd "~/sheng-dotfiles"
+                cwd "~/dotfiles-sheng"
                 args "."
             }
         }

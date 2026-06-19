@@ -1,4 +1,4 @@
-# sheng-dotfiles
+# dotfiles-sheng
 
 Personal NixOS and Home Manager configuration for Xiaomi Pad 6S Pro 12.4
 (`sheng`).
@@ -18,27 +18,27 @@ You can seamlessly switch your entire desktop environment by deploying different
 
 1. **GNOME (Default)** - `sheng`
    The default upstream experience with tablet gestures.
-   *Command*: `nh os switch ~/sheng-dotfiles -H sheng`
+   *Command*: `nh os switch ~/dotfiles-sheng -H sheng`
 
 2. **KDE Plasma 6** - `sheng-plasma`
    Highly optimized memory usage with excellent Wayland touchscreen support. (Recommended)
-   *Command*: `nh os switch ~/sheng-dotfiles -H sheng-plasma`
+   *Command*: `nh os switch ~/dotfiles-sheng -H sheng-plasma`
 
 3. **Phosh** - `sheng-phosh`
    Purism's minimalist touch-first desktop environment based on GNOME technologies.
-   *Command*: `nh os switch ~/sheng-dotfiles -H sheng-phosh`
+   *Command*: `nh os switch ~/dotfiles-sheng -H sheng-phosh`
 
 4. **Hyprland** - `sheng-hyprland`
    Extremely lightweight Wayland compositor for advanced power users.
-   *Command*: `nh os switch ~/sheng-dotfiles -H sheng-hyprland`
+   *Command*: `nh os switch ~/dotfiles-sheng -H sheng-hyprland`
 
 ## First deploy
 
 Clone this repository on the tablet, then deploy from inside the repository:
 
 ```sh
-git clone https://github.com/DotRedstone/sheng-dotfiles.git
-cd sheng-dotfiles
+git clone https://github.com/DotRedstone/dotfiles-sheng.git
+cd dotfiles-sheng
 nix flake update
 sudo nixos-rebuild switch --flake .#sheng-plasma
 ```

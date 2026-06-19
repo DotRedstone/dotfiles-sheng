@@ -21,7 +21,7 @@
       fish_vi_key_bindings
       # [Environment Variables]
       set -gx NH_NOM 1     # Enable pretty output for NH
-      set -gx NH_FLAKE ~/sheng-dotfiles # Standard flake for NH
+      set -gx NH_FLAKE ~/dotfiles-sheng # Standard flake for NH
       set -gx NH_SEARCH_CHANNEL nixpkgs-unstable # Try to fix nh search
       
       # FZF with Bat preview
@@ -107,15 +107,15 @@
       gundo = "git reset --soft HEAD~1";
 
       # --- NixOS Management (nh/nrs) ---
-      nrs    = "nh os switch ~/sheng-dotfiles -H sheng";
-      nrb    = "nh os boot ~/sheng-dotfiles -H sheng";
+      nrs    = "nh os switch ~/dotfiles-sheng -H sheng";
+      nrb    = "nh os boot ~/dotfiles-sheng -H sheng";
       nsl    = "sudo nix-env -p /nix/var/nix/profiles/system --list-generations";
       nsd    = "sudo nix-env -p /nix/var/nix/profiles/system --delete-generations";
       nclean = "nh clean all --keep 5";
-      nconf  = "cd ~/sheng-dotfiles && nvim";
+      nconf  = "cd ~/dotfiles-sheng && nvim";
 
       # --- Home Manager (nh/hms) ---
-      hms = "nh home switch ~/sheng-dotfiles -c dot@sheng";
+      hms = "nh home switch ~/dotfiles-sheng -c dot@sheng";
       hml = "home-manager generations";
       hme = "home-manager expire-generations \"-0 days\"";
 
