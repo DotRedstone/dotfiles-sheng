@@ -48,6 +48,7 @@ let
     caffeine
     quick-settings-tweaker
     tiling-assistant
+    dash-to-dock
   ] ++ [
     gjsOsk
   ];
@@ -106,14 +107,14 @@ in
       landscape-height-percent = 28;
       portrait-width-percent = 92;
       portrait-height-percent = 30;
-      disable-edge-swipe = true;
+      disable-edge-swipe = false;
       enable-drag = true;
       default-snap = 7;
       indicator-enabled = true;
       enable-tap-gesture = 1;
       enable-key-repeat = true;
       key-repeat-rate = 70;
-      play-sound = false;
+      play-sound = true;
       show-icons = true;
       round-key-corners = true;
       font-size-px = 17;
@@ -121,7 +122,7 @@ in
       border-spacing-px = 5;
       outer-spacing-px = 10;
       snap-spacing-px = 28;
-      system-accent-col = true;
+      system-accent-col = false;
       background-r-dark = 28.0;
       background-g-dark = 28.0;
       background-b-dark = 34.0;

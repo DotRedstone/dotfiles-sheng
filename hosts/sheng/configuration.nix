@@ -44,13 +44,16 @@
   users.users.luser.isNormalUser = pkgs.lib.mkForce false;
   users.users.luser.home = pkgs.lib.mkForce "/home/luser";
 
-  
+  # 1. 启用 fish 作为系统 shell
+  programs.fish.enable = true;
+
   # 2. 创建你专属的 dot 账号，密码设为 1
   users.users.dot = {
     isNormalUser = true;
     description = "dot";
     extraGroups = [ "wheel" "networkmanager" "audio" "video" "input" "render" ];
     password = "1";
+    shell = pkgs.fish;
   };
 
   # 3. 强制把开机自动登录账号改为 dot

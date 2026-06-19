@@ -7,6 +7,8 @@
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
+config.default_prog = { 'fish' }
+
 -- [Module Path Setup]
 -- Ensure we can require modules from the same directory
 local config_dir = wezterm.config_dir or (os.getenv("HOME") .. "/.config/wezterm")
