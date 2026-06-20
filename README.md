@@ -32,6 +32,17 @@ You can seamlessly switch your entire desktop environment by deploying different
    Extremely lightweight Wayland compositor for advanced power users.
    *Command*: `nh os switch ~/dotfiles-sheng -H sheng-hyprland`
 
+## Performance & Storage Metrics
+
+Here is the NixOS closure size footprint for each desktop environment configuration (compiled natively for `aarch64-linux`):
+
+| Desktop Environment | Profile Name | System Closure Size | Status | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| **GNOME** | `sheng` | **7.3 GiB** | ✅ Success | The default upstream experience. Heavy but feature-complete. |
+| **Hyprland** | `sheng-hyprland` | **6.7 GiB** | ✅ Success | The lightest compositor available, saving over 600MB compared to GNOME. |
+| **KDE Plasma 6** | `sheng-plasma` | - | ⚠️ Failed | Linking `qtwebengine` may cause Out-Of-Memory (OOM) on 8GB devices. Binary cache is recommended. |
+| **Phosh** | `sheng-phosh` | **7.6 GiB** | ✅ Success | Minimal touch interface, optimized for mobile devices. |
+
 ## First deploy
 
 Clone this repository on the tablet, then deploy from inside the repository:

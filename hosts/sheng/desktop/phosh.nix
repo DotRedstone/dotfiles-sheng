@@ -3,8 +3,8 @@
   services.xserver.enable = true;
   services.xserver.desktopManager.phosh.enable = true;
   
-  # Enable Phosh's on-screen keyboard
-  services.xserver.desktopManager.phosh.phocConfig = {
-    keyboard-enabled = true;
-  };
+
+  
+  services.xserver.desktopManager.phosh.user = "dot";
+  services.xserver.desktopManager.phosh.group = "users";
 }
