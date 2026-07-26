@@ -37,6 +37,10 @@
     hms = "nh home switch ~/dotfiles-sheng -c dot@sheng";
   };
 
+  # 在 sheng 上先关闭自动 GC。移动端 rootfs 一旦带 ext4 错误启动，
+  # 开机补跑 GC 很容易把 /nix/store 写入压力放大成 emergency read-only。
+  nix.gc.automatic = pkgs.lib.mkForce false;
+
   # === 彻底隐藏上游的默认配置 ===
   # 为了不破坏上游 Home Manager 的构建逻辑（它需要 /home/luser），
   # 我们强行保留它的家目录，但把它降级为系统底层账户（非普通用户），
