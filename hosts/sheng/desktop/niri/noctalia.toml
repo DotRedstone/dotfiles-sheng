@@ -27,9 +27,9 @@ transparency_mode = "solid"
 
 [[shell.session.actions]]
 action = "command"
-command = "/run/current-system/sw/bin/swaylock -f"
-glyph = "lock"
-label = "Lock"
+command = "/run/current-system/sw/bin/sheng-niri-display off"
+glyph = "power_settings_new"
+label = "Screen Off"
 shortcut = "1"
 
 [[shell.session.actions]]

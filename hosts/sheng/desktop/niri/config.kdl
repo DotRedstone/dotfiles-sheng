@@ -86,7 +86,7 @@ cursor {
 }
 
 spawn-at-startup "swaybg" "-c" "#090d13"
-spawn-sh-at-startup "swayidle -w timeout 600 'swaylock -f' timeout 630 'sheng-niri-display off' resume 'sheng-niri-display on' before-sleep 'swaylock -f'"
+spawn-sh-at-startup "swayidle -w timeout 600 'sheng-niri-display off' resume 'sheng-niri-display on' before-sleep 'sheng-niri-display off'"
 
 animations {
     workspace-switch {
@@ -159,7 +159,7 @@ binds {
     Mod+Comma hotkey-overlay-title="Open Noctalia Settings" { spawn "noctalia" "msg" "settings-toggle"; }
     Mod+Shift+V hotkey-overlay-title="Open Clipboard" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
     Mod+Shift+Space hotkey-overlay-title="Toggle Touch Keyboard" { spawn "sheng-niri-osk-toggle"; }
-    Super+Alt+L hotkey-overlay-title="Lock Screen" { spawn "swaylock" "-f"; }
+    Super+Alt+L hotkey-overlay-title="Lock Screen" { spawn "sheng-niri-lock"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-up"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }

@@ -68,6 +68,12 @@ let
     fi
   '';
 
+  niriLock = pkgs.writeShellScriptBin "sheng-niri-lock" ''
+    exec ${pkgs.swaylock}/bin/swaylock \
+      --config /etc/xdg/swaylock/config \
+      --daemonize
+  '';
+
   niriTouchAction = pkgs.writeShellScriptBin "sheng-niri-touch-action" ''
     set -eu
 
@@ -281,6 +287,7 @@ in
     libnotify
     lisgd
     niriDisplay
+    niriLock
     niriOskToggle
     niriTouchAction
     niriTouchGestures
