@@ -198,7 +198,7 @@ source = "builtin"
 
 [wallpaper]
 directory = "/home/dot/Pictures"
-enabled = true
+enabled = false
 fill_color = "surface"
 fill_mode = "crop"
 transition = [ "fade", "wipe", "zoom" ]

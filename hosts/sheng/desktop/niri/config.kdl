@@ -85,6 +85,7 @@ cursor {
     hide-after-inactive-ms 4000
 }
 
+spawn-at-startup "swaybg" "-c" "#090d13"
 spawn-sh-at-startup "swayidle -w timeout 600 'swaylock -f' timeout 630 'sheng-niri-display off' resume 'sheng-niri-display on' before-sleep 'swaylock -f'"
 
 animations {

@@ -201,6 +201,7 @@ in
     niriDisplay
     niriOskToggle
     playerctl
+    swaybg
     swayidle
     swaylock
     wl-clipboard
