@@ -22,7 +22,10 @@
     fcitx5.addons = with pkgs; [
       fcitx5-gtk
       (fcitx5-rime.override {
-        rimeDataPkgs = [ rime-ice ];
+        rimeDataPkgs = [
+          rime-data
+          rime-ice
+        ];
       })
     ];
   };
