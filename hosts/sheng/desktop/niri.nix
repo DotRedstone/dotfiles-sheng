@@ -8,6 +8,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -121,6 +122,15 @@ let
       overview)
         action="toggle-overview"
         ;;
+      close)
+        action="close-window"
+        ;;
+      fullscreen)
+        action="fullscreen-window"
+        ;;
+      maximize)
+        action="maximize-column"
+        ;;
     esac
 
     NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg action "$action"
@@ -137,6 +147,9 @@ let
       -m 1000 \
       -r 20 \
       -t 220 \
+      -g "2,DU,T,*,R,$action close" \
+      -g "2,UD,B,*,R,$action fullscreen" \
+      -g "2,RL,R,*,R,$action maximize" \
       -g "3,RL,*,*,R,$action column-right" \
       -g "3,LR,*,*,R,$action column-left" \
       -g "3,DU,*,*,R,$action workspace-down" \
@@ -344,6 +357,14 @@ in
   # The upstream helper talks directly to Mutter. Niri gets native display
   # control services below instead.
   systemd.services.fake-tablet-mode.wantedBy = lib.mkForce [ ];
+
+  programs.noctalia = {
+    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
+      patches = (oldAttrs.patches or [ ]) ++ [
+        /home/dot/Projects/noctalia-touch-controls/patches/launcher-touch-fix.patch
+      ];
+    });
+  };
 
   systemd.user.services.noctalia = {
     environment = {
