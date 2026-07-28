@@ -13,6 +13,79 @@
 }:
 
 let
+  regreetSession = pkgs.writeShellScript "sheng-regreet-session" ''
+    set -eu
+
+    ${pkgs.wvkbd}/bin/wvkbd-mobintl -L 300 &
+    osk_pid=$!
+
+    cleanup() {
+      kill "$osk_pid" 2>/dev/null || true
+    }
+    trap cleanup EXIT INT TERM
+
+    ${lib.getExe config.programs.regreet.package}
+    ${pkgs.niri}/bin/niri msg action quit --skip-confirmation
+  '';
+
+  regreetNiriConfig = pkgs.writeText "sheng-regreet-niri.kdl" ''
+    input {
+        keyboard {
+            xkb {
+                layout "us"
+            }
+            numlock
+        }
+
+        touchpad {
+            tap
+            natural-scroll
+            dwt
+        }
+    }
+
+    output "DSI-1" {
+        mode "3048x2032"
+        scale 2
+        transform "normal"
+        focus-at-startup
+    }
+
+    layout {
+        gaps 0
+        background-color "#101419"
+
+        focus-ring {
+            off
+        }
+
+        border {
+            off
+        }
+    }
+
+    hotkey-overlay {
+        skip-at-startup
+    }
+
+    cursor {
+        hide-when-typing
+        hide-after-inactive-ms 4000
+    }
+
+    environment {
+        GTK_USE_PORTAL "0"
+        GDK_DEBUG "no-portals"
+    }
+
+    animations {
+        off
+    }
+
+    prefer-no-csd
+    spawn-at-startup "${regreetSession}"
+  '';
+
   niriDisplay = pkgs.writeShellScriptBin "sheng-niri-display" ''
     set -eu
 
@@ -284,11 +357,104 @@ in
     recommendedServices.enable = true;
   };
 
-  services.xserver.enable = true;
-  services.xserver.desktopManager.xterm.enable = false;
-  services.xserver.excludePackages = [ pkgs.xterm ];
-  services.displayManager.gdm.enable = true;
-  services.displayManager.defaultSession = "niri";
+  services.xserver.enable = lib.mkForce false;
+  services.displayManager.gdm.enable = lib.mkForce false;
+  services.greetd.settings.default_session = {
+    command = "${pkgs.dbus}/bin/dbus-run-session ${pkgs.niri}/bin/niri --config /etc/greetd/niri.kdl";
+    user = "greeter";
+  };
+  programs.regreet = {
+    enable = true;
+    font = {
+      name = "Inter";
+      package = pkgs.inter;
+      size = 18;
+    };
+    settings = {
+      skip_selection = false;
+      GTK = {
+        application_prefer_dark_theme = true;
+        cursor_blink = false;
+      };
+      commands = {
+        reboot = [
+          "${pkgs.systemd}/bin/systemctl"
+          "reboot"
+        ];
+        poweroff = [
+          "${pkgs.systemd}/bin/systemctl"
+          "poweroff"
+        ];
+      };
+      appearance.greeting_msg = "SHENG";
+      widget.clock = {
+        format = "%H:%M";
+        resolution = "1s";
+        label_width = 100;
+      };
+    };
+    extraCss = ''
+      window {
+        background-color: #101419;
+        color: #e8eef3;
+      }
+
+      frame.background {
+        background-color: #171d24;
+        border: 1px solid #34414c;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      entry,
+      passwordentry,
+      combobox > box,
+      button {
+        min-height: 52px;
+        border-radius: 6px;
+        padding: 4px 14px;
+      }
+
+      entry,
+      passwordentry,
+      combobox > box {
+        background-color: #222b34;
+        border: 1px solid #465562;
+        color: #f4f7f9;
+      }
+
+      entry:focus,
+      passwordentry:focus,
+      combobox > box:focus {
+        border-color: #4dc5dc;
+        box-shadow: 0 0 0 2px rgba(77, 197, 220, 0.22);
+      }
+
+      button {
+        background-color: #27323c;
+        border: 1px solid #465562;
+        color: #edf2f5;
+      }
+
+      button:hover,
+      button:focus {
+        background-color: #33414d;
+        border-color: #60717f;
+      }
+
+      button.suggested-action {
+        background-color: #4dc5dc;
+        border-color: #4dc5dc;
+        color: #071014;
+      }
+
+      button.destructive-action {
+        background-color: #3a292d;
+        border-color: #8a4854;
+        color: #ffb4be;
+      }
+    '';
+  };
   services.kmscon.enable = lib.mkForce false;
   hardware.graphics.enable = true;
 
@@ -330,6 +496,7 @@ in
   };
 
   environment.etc = {
+    "greetd/niri.kdl".source = regreetNiriConfig;
     "niri/config.kdl".source = ./niri/config.kdl;
     "xdg/swaylock/config".source = ./niri/swaylock.conf;
     "xdg/noctalia/config.toml".source = ./niri/noctalia.toml;
@@ -341,29 +508,18 @@ in
     SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="NVTCapacitiveTouchScreen", GROUP="input", MODE="0660", SYMLINK+="input/touchscreen"
   '';
 
-  programs.dconf.profiles.gdm.databases = [
-    {
-      settings."org/gnome/desktop/a11y/applications" = {
-        screen-keyboard-enabled = true;
-      };
-      settings."org/gnome/settings-daemon/plugins/power" = {
-        power-button-action = "nothing";
-        sleep-inactive-ac-type = "nothing";
-        sleep-inactive-battery-type = "nothing";
-      };
-    }
-  ];
-
   # The upstream helper talks directly to Mutter. Niri gets native display
   # control services below instead.
   systemd.services.fake-tablet-mode.wantedBy = lib.mkForce [ ];
 
   programs.noctalia = {
-    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
-      patches = (oldAttrs.patches or [ ]) ++ [
-        /home/dot/Projects/noctalia-touch-controls/patches/launcher-touch-fix.patch
-      ];
-    });
+    package =
+      inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
+        (oldAttrs: {
+          patches = (oldAttrs.patches or [ ]) ++ [
+            /home/dot/Projects/noctalia-touch-controls/patches/launcher-touch-fix.patch
+          ];
+        });
   };
 
   systemd.user.services.noctalia = {
