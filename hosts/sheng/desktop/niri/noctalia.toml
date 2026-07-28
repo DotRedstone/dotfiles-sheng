@@ -2,6 +2,7 @@
 clipboard_enabled = true
 clipboard_history_max_entries = 50
 external_ip_enabled = false
+font_family = "Inter"
 launch_apps_as_systemd_services = true
 middle_click_opens_widget_settings = true
 niri_overview_type_to_launch_enabled = true

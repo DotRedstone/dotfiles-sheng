@@ -71,6 +71,20 @@ let
   niriTouchAction = pkgs.writeShellScriptBin "sheng-niri-touch-action" ''
     set -eu
 
+    case "''${1:-}" in
+      launcher)
+        exec ${lib.getExe config.programs.noctalia.package} msg panel-toggle launcher
+        ;;
+      control-center)
+        exec ${lib.getExe config.programs.noctalia.package} msg panel-toggle control-center
+        ;;
+      column-left|column-right|workspace-up|workspace-down|overview)
+        ;;
+      *)
+        exit 2
+        ;;
+    esac
+
     runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
     socket="''${NIRI_SOCKET:-}"
     if [ -z "$socket" ]; then
@@ -84,14 +98,6 @@ let
     if [ -z "$socket" ]; then
       exit 0
     fi
-
-    case "''${1:-}" in
-      column-left|column-right|workspace-up|workspace-down|overview)
-        ;;
-      *)
-        exit 2
-        ;;
-    esac
 
     case "$1" in
       column-left)
@@ -130,7 +136,9 @@ let
       -g "3,DU,*,*,R,$action workspace-down" \
       -g "3,UD,*,*,R,$action workspace-up" \
       -g "4,DU,*,*,R,$action overview" \
-      -g "4,UD,*,*,R,$action overview"
+      -g "4,UD,*,*,R,$action overview" \
+      -g "4,LR,*,*,R,$action launcher" \
+      -g "4,RL,*,*,R,$action control-center"
   '';
 
   displayControls = pkgs.writeScript "sheng-niri-display-controls" ''

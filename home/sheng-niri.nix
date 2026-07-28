@@ -25,6 +25,27 @@
 
   programs.home-manager.enable = true;
 
+  gtk = {
+    enable = true;
+    font = {
+      name = "Inter";
+      size = 11;
+    };
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+  };
+
+  dconf.settings."org/gnome/desktop/interface" = {
+    clock-show-weekday = true;
+    color-scheme = "prefer-dark";
+    cursor-size = 32;
+    document-font-name = "Noto Serif CJK SC 11";
+    font-name = "Inter 11";
+    monospace-font-name = "Maple Mono NF 11";
+    show-battery-percentage = true;
+    text-scaling-factor = 1.05;
+  };
+
   xdg = {
     enable = true;
     mimeApps = {

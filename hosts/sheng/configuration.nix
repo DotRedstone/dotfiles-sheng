@@ -11,13 +11,38 @@
   time.timeZone = pkgs.lib.mkForce "Asia/Shanghai";
   i18n.defaultLocale = pkgs.lib.mkForce "zh_CN.UTF-8";
 
-  # 字体配置 (如果你需要安装私人中文字体、编程字体等)
-  fonts.packages = with pkgs; [
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-color-emoji
-    # fira-code
-  ];
+  # Keep the public image self-contained: UI, Chinese, monospace, symbols,
+  # emoji, and document fonts all have an explicit fallback.
+  fonts = {
+    packages = with pkgs; [
+      cantarell-fonts
+      inter
+      maple-mono.NF
+      nerd-fonts.symbols-only
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+      noto-fonts-color-emoji
+    ];
+
+    fontconfig.defaultFonts = {
+      sansSerif = [
+        "Inter"
+        "Noto Sans CJK SC"
+        "Noto Sans"
+      ];
+      serif = [
+        "Noto Serif CJK SC"
+        "Noto Serif"
+      ];
+      monospace = [
+        "Maple Mono NF"
+        "Noto Sans Mono CJK SC"
+        "Noto Sans Mono"
+      ];
+      emoji = [ "Noto Color Emoji" ];
+    };
+  };
 
   # 全局系统包 (这里只装最底层的必备工具，应用软件建议丢进 home.nix)
   environment.systemPackages = with pkgs; [

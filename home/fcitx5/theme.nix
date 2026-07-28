@@ -78,9 +78,9 @@ in
       printf '%s\n' \
         'Vertical Candidate List=False' \
         'Theme=noctalia-inflex-dark' \
-        'Font="FZYJHK B 14"' \
-        'MenuFont="FZYJHK B 14"' \
-        'TrayFont="FZYJHK B 11"' \
+        'Font="Noto Sans CJK SC 14"' \
+        'MenuFont="Noto Sans CJK SC 14"' \
+        'TrayFont="Noto Sans CJK SC 11"' \
         > "$conf"
     fi
 
@@ -89,19 +89,19 @@ in
     grep -q '^Vertical Candidate List=' "$conf" || printf '%s\n' 'Vertical Candidate List=False' >> "$conf"
     grep -q '^Theme=' "$conf" || printf '%s\n' 'Theme=noctalia-inflex-dark' >> "$conf"
     if grep -q '^Font=' "$conf"; then
-      sed -i 's/^Font=.*/Font="FZYJHK B 14"/' "$conf"
+      sed -i 's/^Font=.*/Font="Noto Sans CJK SC 14"/' "$conf"
     else
-      printf '%s\n' 'Font="FZYJHK B 14"' >> "$conf"
+      printf '%s\n' 'Font="Noto Sans CJK SC 14"' >> "$conf"
     fi
     if grep -q '^MenuFont=' "$conf"; then
-      sed -i 's/^MenuFont=.*/MenuFont="FZYJHK B 14"/' "$conf"
+      sed -i 's/^MenuFont=.*/MenuFont="Noto Sans CJK SC 14"/' "$conf"
     else
-      printf '%s\n' 'MenuFont="FZYJHK B 14"' >> "$conf"
+      printf '%s\n' 'MenuFont="Noto Sans CJK SC 14"' >> "$conf"
     fi
     if grep -q '^TrayFont=' "$conf"; then
-      sed -i 's/^TrayFont=.*/TrayFont="FZYJHK B 11"/' "$conf"
+      sed -i 's/^TrayFont=.*/TrayFont="Noto Sans CJK SC 11"/' "$conf"
     else
-      printf '%s\n' 'TrayFont="FZYJHK B 11"' >> "$conf"
+      printf '%s\n' 'TrayFont="Noto Sans CJK SC 11"' >> "$conf"
     fi
 
     if [ -z "''${DBUS_SESSION_BUS_ADDRESS:-}" ] && [ -S "/run/user/$(id -u)/bus" ]; then
