@@ -175,6 +175,14 @@ in
 {
   programs.niri.enable = true;
   programs.dconf.enable = true;
+  programs.noctalia = {
+    enable = true;
+    systemd = {
+      enable = true;
+      target = "niri.service";
+    };
+    recommendedServices.enable = true;
+  };
 
   services.xserver.enable = true;
   services.xserver.desktopManager.xterm.enable = false;
@@ -186,40 +194,33 @@ in
 
   environment.systemPackages = with pkgs; [
     brightnessctl
-    fuzzel
+    cliphist
+    imagemagick
     jq
     libnotify
-    mako
     niriDisplay
     niriOskToggle
     playerctl
-    swaybg
-    swayidle
-    swaylock
-    waybar
     wl-clipboard
-    wlogout
+    wlsunset
     wvkbd
+    wtype
     xwayland-satellite
   ];
 
   environment.sessionVariables = {
     MOZ_ENABLE_WAYLAND = "1";
+    NOCTALIA_CONFIG_HOME = "/etc/xdg";
     NIXOS_OZONE_WL = "1";
     QT_QPA_PLATFORM = "wayland;xcb";
     SDL_VIDEODRIVER = "wayland";
+    TERMINAL = "wezterm";
   };
 
   environment.etc = {
     "niri/config.kdl".source = ./niri/config.kdl;
-    "xdg/waybar/config.jsonc".source = ./niri/waybar.jsonc;
-    "xdg/waybar/style.css".source = ./niri/waybar.css;
-    "xdg/mako/config".source = ./niri/mako.conf;
-    "xdg/fuzzel/fuzzel.ini".source = ./niri/fuzzel.ini;
-    "xdg/swaylock/config".source = ./niri/swaylock.conf;
+    "xdg/noctalia/config.toml".source = ./niri/noctalia.toml;
   };
-
-  security.pam.services.swaylock = { };
 
   programs.dconf.profiles.gdm.databases = [
     {
@@ -237,6 +238,14 @@ in
   # The upstream helper talks directly to Mutter. Niri gets native display
   # control services below instead.
   systemd.services.fake-tablet-mode.wantedBy = lib.mkForce [ ];
+
+  systemd.user.services.noctalia = {
+    environment = {
+      NOCTALIA_CONFIG_HOME = "/etc/xdg";
+      TERMINAL = "wezterm";
+    };
+    serviceConfig.RestartSec = 2;
+  };
 
   systemd.user.services.sheng-niri-display-controls = {
     description = "Handle sheng power key and cover events in Niri";

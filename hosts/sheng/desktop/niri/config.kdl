@@ -34,6 +34,7 @@ output "DSI-1" {
 layout {
     gaps 12
     center-focused-column "on-overflow"
+    background-color "transparent"
 
     preset-column-widths {
         proportion 0.38
@@ -71,11 +72,6 @@ layout {
         bottom 4
     }
 }
-
-spawn-at-startup "waybar" "-c" "/etc/xdg/waybar/config.jsonc" "-s" "/etc/xdg/waybar/style.css"
-spawn-at-startup "mako" "--config" "/etc/xdg/mako/config"
-spawn-at-startup "swaybg" "-c" "#090d13"
-spawn-sh-at-startup "swayidle -w timeout 600 'swaylock -f' timeout 630 'sheng-niri-display off' resume 'sheng-niri-display on' before-sleep 'swaylock -f'"
 
 hotkey-overlay {
     skip-at-startup
@@ -121,28 +117,56 @@ window-rule {
     open-floating true
 }
 
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 860; }
+    default-window-height { fixed 760; }
+}
+
 layer-rule {
-    match namespace="^waybar$"
+    match namespace="^noctalia-wallpaper"
     place-within-backdrop true
+}
+
+layer-rule {
+    match namespace=r#"^noctalia-(bar-[^"]+|notification|dock|panel|attached-panel|osd)$"#
+    background-effect {
+        blur false
+        xray false
+    }
+}
+
+overview {
+    workspace-shadow {
+        off
+    }
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
 }
 
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     Mod+Return hotkey-overlay-title="Open Terminal" { spawn "wezterm"; }
-    Mod+Space hotkey-overlay-title="Open Applications" { spawn "fuzzel"; }
+    Mod+Space hotkey-overlay-title="Open Applications" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+S hotkey-overlay-title="Open Control Center" { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+Comma hotkey-overlay-title="Open Noctalia Settings" { spawn "noctalia" "msg" "settings-toggle"; }
+    Mod+Shift+V hotkey-overlay-title="Open Clipboard" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
     Mod+Shift+Space hotkey-overlay-title="Toggle Touch Keyboard" { spawn "sheng-niri-osk-toggle"; }
-    Super+Alt+L hotkey-overlay-title="Lock Screen" { spawn "swaylock" "-f"; }
+    Super+Alt+L hotkey-overlay-title="Lock Screen" { spawn "noctalia" "msg" "session" "lock"; }
 
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
-    XF86AudioMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }
+    XF86AudioMute allow-when-locked=true { spawn "noctalia" "msg" "volume-mute"; }
+    XF86AudioMicMute allow-when-locked=true { spawn "noctalia" "msg" "mic-volume-mute"; }
     XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
     XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
     XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "set" "+5%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "5%-"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia" "msg" "brightness-down"; }
 
     Mod+O repeat=false { toggle-overview; }
     Mod+Q repeat=false { close-window; }
@@ -197,5 +221,6 @@ binds {
 
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { spawn "sheng-niri-display" "off"; }
-    Mod+Shift+E { quit; }
+    Mod+Shift+E { spawn "noctalia" "msg" "panel-toggle" "session"; }
+    Mod+Ctrl+Shift+E { quit; }
 }

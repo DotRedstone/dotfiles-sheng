@@ -7,10 +7,6 @@
 {
   xdg.configFile = {
     "niri/config.kdl".source = ../../hosts/sheng/desktop/niri/config.kdl;
-    "waybar/config.jsonc".source = ../../hosts/sheng/desktop/niri/waybar.jsonc;
-    "waybar/style.css".source = ../../hosts/sheng/desktop/niri/waybar.css;
-    "mako/config".source = ../../hosts/sheng/desktop/niri/mako.conf;
-    "fuzzel/fuzzel.ini".source = ../../hosts/sheng/desktop/niri/fuzzel.ini;
-    "swaylock/config".source = ../../hosts/sheng/desktop/niri/swaylock.conf;
+    "noctalia/config.toml".source = ../../hosts/sheng/desktop/niri/noctalia.toml;
   };
 }

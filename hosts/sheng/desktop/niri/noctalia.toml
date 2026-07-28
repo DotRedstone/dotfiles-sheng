@@ -1,0 +1,192 @@
+[shell]
+clipboard_enabled = true
+clipboard_history_max_entries = 50
+external_ip_enabled = false
+launch_apps_as_systemd_services = true
+middle_click_opens_widget_settings = true
+niri_overview_type_to_launch_enabled = true
+polkit_agent = true
+settings_show_advanced = false
+setup_wizard_enabled = false
+telemetry_enabled = false
+ui_scale = 1.1
+
+[shell.panel]
+borders = true
+clipboard_placement = "floating"
+clipboard_position = "center"
+control_center_placement = "attached"
+launcher_placement = "floating"
+launcher_position = "center"
+open_near_click_control_center = true
+open_near_click_session = true
+session_placement = "attached"
+shadow = true
+transparency_mode = "solid"
+
+[bar]
+order = [ "default" ]
+
+[bar.default]
+background_opacity = 0.96
+capsule = true
+capsule_fill = "surface_variant"
+capsule_opacity = 0.86
+capsule_padding = 9
+capsule_radius = 9
+center = [ "clock" ]
+end = [ "touch_keyboard", "network", "volume", "brightness", "battery", "control-center", "session" ]
+margin_edge = 8
+margin_ends = 10
+padding = 11
+position = "top"
+radius = 10
+reserve_space = true
+scale = 1.0
+shadow = true
+start = [ "launcher", "workspaces" ]
+thickness = 48
+widget_spacing = 7
+
+[widget.clock]
+format = "{:%H:%M}"
+
+[widget.touch_keyboard]
+type = "custom_button"
+command = "/run/current-system/sw/bin/sheng-niri-osk-toggle"
+glyph = "keyboard"
+tooltip = "Touch keyboard"
+
+[widget.network]
+show_label = false
+
+[widget.volume]
+show_label = false
+
+[widget.brightness]
+show_label = false
+
+[widget.battery]
+display_mode = "graphic"
+hide_when_full = false
+hide_when_plugged = false
+show_label = true
+
+[widget.tray]
+drawer = true
+drawer_columns = 3
+drawer_item_size = 36
+
+[dock]
+active_monitor_only = true
+auto_hide = true
+background_opacity = 0.94
+cross_axis_padding = 9
+enabled = true
+icon_size = 52
+item_spacing = 8
+launcher_position = "start"
+magnification = false
+main_axis_padding = 14
+margin_edge = 8
+pinned = [ "firefox", "org.gnome.Nautilus", "org.wezfurlong.wezterm" ]
+position = "bottom"
+radius = 12
+reserve_space = false
+shadow = true
+show_dots = true
+show_running = true
+
+[control_center]
+sidebar = "compact"
+sidebar_section = "compact"
+width = 620
+
+[[control_center.shortcuts]]
+type = "wifi"
+
+[[control_center.shortcuts]]
+type = "bluetooth"
+
+[[control_center.shortcuts]]
+type = "caffeine"
+
+[[control_center.shortcuts]]
+type = "notification"
+
+[[control_center.shortcuts]]
+type = "power_profile"
+
+[[control_center.shortcuts]]
+type = "session"
+
+[notification]
+background_opacity = 0.97
+collapse_on_dismiss = true
+enable_daemon = true
+offset_x = 16
+offset_y = 62
+position = "top_right"
+scale = 1.05
+show_actions = true
+show_app_name = true
+
+[osd]
+background_opacity = 0.97
+offset_y = 62
+orientation = "horizontal"
+position = "top_center"
+scale = 1.1
+
+[battery]
+warning_threshold = 15
+
+[brightness]
+enable_ddcutil = false
+minimum_brightness = 0.05
+
+[audio]
+enable_overdrive = false
+enable_sounds = false
+
+[lockscreen]
+allow_empty_password = false
+blurred_desktop = false
+enabled = true
+fingerprint = false
+tint_intensity = 0.5
+
+[idle]
+pre_action_fade_seconds = 1.0
+
+[idle.behavior.lock]
+action = "lock"
+enabled = true
+timeout = 600
+
+[idle.behavior.screen-off]
+action = "command"
+command = "/run/current-system/sw/bin/sheng-niri-display off"
+enabled = true
+resume_command = "/run/current-system/sw/bin/sheng-niri-display on"
+timeout = 630
+
+[theme]
+builtin = "Noctalia"
+mode = "dark"
+source = "builtin"
+
+[wallpaper]
+directory = "/home/dot/Pictures"
+enabled = true
+fill_color = "surface"
+fill_mode = "crop"
+transition = [ "fade", "wipe", "zoom" ]
+transition_duration = 700
+transition_on_startup = false
+
+[wallpaper.default]
+path = "color:#101419"
+
+[backdrop]
+enabled = false

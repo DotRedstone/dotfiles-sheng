@@ -16,6 +16,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell/940261a272dfdcd5e6534754c82fc50c4fec2f5e";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # 引用 sheng 硬件仓库。普通用户只需要 clone 本仓库，
     # 不需要在本地额外 clone nixos-sheng。
     nixos-sheng = {
@@ -78,6 +83,7 @@
       # 5. Niri 滚动平铺 Wayland 桌面
       # 部署命令: nh os switch ~/dotfiles-sheng -H sheng-niri
       sheng-niri = nixos-sheng.lib.${system}.mkShengSystem (shengBaseModules ++ [
+        inputs.noctalia.nixosModules.default
         ./hosts/sheng/desktop/niri.nix
       ]);
     };
