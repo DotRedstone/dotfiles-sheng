@@ -517,7 +517,7 @@ in
       inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
         (oldAttrs: {
           patches = (oldAttrs.patches or [ ]) ++ [
-            /home/dot/Projects/noctalia-touch-controls/patches/launcher-touch-fix.patch
+            ./niri/launcher-touch-fix.patch
           ];
         });
   };

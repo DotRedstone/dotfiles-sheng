@@ -1,0 +1,120 @@
+diff -u -r a/Modules/Panels/Launcher/LauncherCore.qml b/Modules/Panels/Launcher/LauncherCore.qml
+--- a/Modules/Panels/Launcher/LauncherCore.qml	2026-07-28 22:12:52.103719807 +0800
++++ b/Modules/Panels/Launcher/LauncherCore.qml	2026-07-28 22:42:31.292943966 +0800
+@@ -739,7 +739,7 @@
+         model: root.results
+         currentIndex: root.selectedIndex
+         cacheBuffer: resultsList.height * 2
+-        interactive: !Settings.data.appLauncher.ignoreMouseInput
++        interactive: true
+         onCurrentIndexChanged: {
+           cancelFlick();
+           if (currentIndex >= 0) {
+@@ -845,7 +845,7 @@
+         cacheBuffer: resultsGrid.height * 2
+         keyNavigationEnabled: false
+         focus: false
+-        interactive: !Settings.data.appLauncher.ignoreMouseInput
++        interactive: true
+
+         // Completely disable GridView key handling
+         Keys.enabled: false
+diff -u -r a/Modules/Panels/Launcher/LauncherGridDelegate.qml b/Modules/Panels/Launcher/LauncherGridDelegate.qml
+--- a/Modules/Panels/Launcher/LauncherGridDelegate.qml	2026-07-28 22:12:52.096739200 +0800
++++ b/Modules/Panels/Launcher/LauncherGridDelegate.qml	2026-07-28 22:42:31.291446761 +0800
+@@ -247,26 +247,22 @@
+     }
+   }
+
+-  MouseArea {
+-    id: mouseArea
+-    anchors.fill: parent
+-    z: -1
+-    hoverEnabled: true
+-    cursorShape: Qt.PointingHandCursor
++  TapHandler {
++    gesturePolicy: TapHandler.ReleaseWithinBounds
+     enabled: !Settings.data.appLauncher.ignoreMouseInput
++    onTapped: {
++      launcher.selectedIndex = gridEntryContainer.index;
++      launcher.activate();
++    }
++  }
+
+-    onEntered: {
+-      if (!launcher.ignoreMouseHover) {
++  HoverHandler {
++    enabled: !Settings.data.appLauncher.ignoreMouseInput
++    onHoveredChanged: {
++      if (hovered && !launcher.ignoreMouseHover) {
+         launcher.selectedIndex = gridEntryContainer.index;
+       }
+     }
+-    onClicked: mouse => {
+-                 if (mouse.button === Qt.LeftButton) {
+-                   launcher.selectedIndex = gridEntryContainer.index;
+-                   launcher.activate();
+-                   mouse.accepted = true;
+-                 }
+-               }
+-    acceptedButtons: Qt.LeftButton
++    cursorShape: Qt.PointingHandCursor
+   }
+ }
+diff -u -r a/Modules/Panels/Launcher/LauncherListDelegate.qml b/Modules/Panels/Launcher/LauncherListDelegate.qml
+--- a/Modules/Panels/Launcher/LauncherListDelegate.qml	2026-07-28 22:12:52.100719871 +0800
++++ b/Modules/Panels/Launcher/LauncherListDelegate.qml	2026-07-28 22:42:31.292124610 +0800
+@@ -270,25 +270,22 @@
+     }
+   }
+
+-  MouseArea {
+-    id: mouseArea
+-    anchors.fill: parent
+-    z: -1
+-    hoverEnabled: true
+-    cursorShape: Qt.PointingHandCursor
++  TapHandler {
++    gesturePolicy: TapHandler.ReleaseWithinBounds
++    enabled: !Settings.data.appLauncher.ignoreMouseInput
++    onTapped: {
++      launcher.selectedIndex = entry.index;
++      launcher.activate();
++    }
++  }
++
++  HoverHandler {
+     enabled: !Settings.data.appLauncher.ignoreMouseInput
+-    onEntered: {
+-      if (!launcher.ignoreMouseHover) {
++    onHoveredChanged: {
++      if (hovered && !launcher.ignoreMouseHover) {
+         launcher.selectedIndex = entry.index;
+       }
+     }
+-    onClicked: mouse => {
+-                 if (mouse.button === Qt.LeftButton) {
+-                   launcher.selectedIndex = entry.index;
+-                   launcher.activate();
+-                   mouse.accepted = true;
+-                 }
+-               }
+-    acceptedButtons: Qt.LeftButton
++    cursorShape: Qt.PointingHandCursor
+   }
+ }
+diff -u -r a/Modules/Panels/Launcher/LauncherOverlayWindow.qml b/Modules/Panels/Launcher/LauncherOverlayWindow.qml
+--- a/Modules/Panels/Launcher/LauncherOverlayWindow.qml	2026-07-28 22:12:52.093292565 +0800
++++ b/Modules/Panels/Launcher/LauncherOverlayWindow.qml	2026-07-28 22:42:31.288078545 +0800
+@@ -101,9 +101,9 @@
+         anchors.fill: parent
+         color: Qt.alpha(Color.mSurface, Settings.data.general.dimmerOpacity)
+
+-        MouseArea {
+-          anchors.fill: parent
+-          onClicked: PanelService.closeOverlayLauncher()
++        TapHandler {
++          gesturePolicy: TapHandler.ReleaseWithinBounds
++          onTapped: PanelService.closeOverlayLauncher()
+         }
+       }
