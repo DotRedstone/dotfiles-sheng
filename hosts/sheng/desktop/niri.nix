@@ -63,6 +63,71 @@ let
     fi
   '';
 
+  niriTouchAction = pkgs.writeShellScriptBin "sheng-niri-touch-action" ''
+    set -eu
+
+    runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
+    socket="''${NIRI_SOCKET:-}"
+    if [ -z "$socket" ]; then
+      socket="$(
+        ${pkgs.findutils}/bin/find "$runtime_dir" -maxdepth 1 -type s \
+          -name 'niri.*.sock' -print 2>/dev/null |
+          ${pkgs.coreutils}/bin/head -n 1
+      )"
+    fi
+
+    if [ -z "$socket" ]; then
+      exit 0
+    fi
+
+    case "''${1:-}" in
+      column-left|column-right|workspace-up|workspace-down|overview)
+        ;;
+      *)
+        exit 2
+        ;;
+    esac
+
+    case "$1" in
+      column-left)
+        action="focus-column-left"
+        ;;
+      column-right)
+        action="focus-column-right"
+        ;;
+      workspace-up)
+        action="focus-workspace-up"
+        ;;
+      workspace-down)
+        action="focus-workspace-down"
+        ;;
+      overview)
+        action="toggle-overview"
+        ;;
+    esac
+
+    NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg action "$action"
+  '';
+
+  niriTouchGestures = pkgs.writeShellScriptBin "sheng-niri-touch-gestures" ''
+    set -eu
+
+    export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-wayland-1}"
+    action=${niriTouchAction}/bin/sheng-niri-touch-action
+
+    exec ${pkgs.lisgd}/bin/lisgd \
+      -d /dev/input/touchscreen \
+      -m 1000 \
+      -r 20 \
+      -t 220 \
+      -g "3,RL,*,*,R,$action column-right" \
+      -g "3,LR,*,*,R,$action column-left" \
+      -g "3,DU,*,*,R,$action workspace-down" \
+      -g "3,UD,*,*,R,$action workspace-up" \
+      -g "4,DU,*,*,R,$action overview" \
+      -g "4,UD,*,*,R,$action overview"
+  '';
+
   displayControls = pkgs.writeScript "sheng-niri-display-controls" ''
     #!${pkgs.python3.withPackages (p: [ p.evdev ])}/bin/python3
     import select
@@ -167,6 +232,9 @@ let
           if [ -n "$socket" ] &&
              NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg output DSI-1 transform "$transform"; then
             current="$transform"
+            ${pkgs.coreutils}/bin/sleep 0.2
+            ${pkgs.systemd}/bin/systemctl --user try-restart \
+              sheng-niri-touch-gestures.service || true
           fi
         fi
       done
@@ -198,8 +266,11 @@ in
     imagemagick
     jq
     libnotify
+    lisgd
     niriDisplay
     niriOskToggle
+    niriTouchAction
+    niriTouchGestures
     playerctl
     swaybg
     swayidle
@@ -227,6 +298,10 @@ in
   };
 
   security.pam.services.swaylock = { };
+
+  services.udev.extraRules = ''
+    SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="NVTCapacitiveTouchScreen", GROUP="input", MODE="0660", SYMLINK+="input/touchscreen"
+  '';
 
   programs.dconf.profiles.gdm.databases = [
     {
@@ -272,6 +347,18 @@ in
     after = [ "niri.service" ];
     serviceConfig = {
       ExecStart = "${autoRotate}/bin/sheng-niri-auto-rotate";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
+
+  systemd.user.services.sheng-niri-touch-gestures = {
+    description = "Handle touchscreen gestures in the sheng Niri session";
+    wantedBy = [ "niri.service" ];
+    partOf = [ "niri.service" ];
+    after = [ "niri.service" ];
+    serviceConfig = {
+      ExecStart = "${niriTouchGestures}/bin/sheng-niri-touch-gestures";
       Restart = "on-failure";
       RestartSec = 2;
     };
