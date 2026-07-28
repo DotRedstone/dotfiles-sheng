@@ -24,6 +24,26 @@ session_placement = "attached"
 shadow = true
 transparency_mode = "solid"
 
+[[shell.session.actions]]
+action = "command"
+command = "/run/current-system/sw/bin/swaylock -f"
+glyph = "lock"
+label = "Lock"
+shortcut = "1"
+
+[[shell.session.actions]]
+action = "logout"
+shortcut = "2"
+
+[[shell.session.actions]]
+action = "reboot"
+shortcut = "3"
+
+[[shell.session.actions]]
+action = "shutdown"
+shortcut = "4"
+variant = "destructive"
+
 [bar]
 order = [ "default" ]
 
@@ -152,7 +172,7 @@ enable_sounds = false
 [lockscreen]
 allow_empty_password = false
 blurred_desktop = false
-enabled = true
+enabled = false
 fingerprint = false
 tint_intensity = 0.5
 
@@ -161,13 +181,13 @@ pre_action_fade_seconds = 1.0
 
 [idle.behavior.lock]
 action = "lock"
-enabled = true
+enabled = false
 timeout = 600
 
 [idle.behavior.screen-off]
 action = "command"
 command = "/run/current-system/sw/bin/sheng-niri-display off"
-enabled = true
+enabled = false
 resume_command = "/run/current-system/sw/bin/sheng-niri-display on"
 timeout = 630
 

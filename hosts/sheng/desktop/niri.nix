@@ -201,6 +201,8 @@ in
     niriDisplay
     niriOskToggle
     playerctl
+    swayidle
+    swaylock
     wl-clipboard
     wlsunset
     wvkbd
@@ -219,8 +221,11 @@ in
 
   environment.etc = {
     "niri/config.kdl".source = ./niri/config.kdl;
+    "xdg/swaylock/config".source = ./niri/swaylock.conf;
     "xdg/noctalia/config.toml".source = ./niri/noctalia.toml;
   };
+
+  security.pam.services.swaylock = { };
 
   programs.dconf.profiles.gdm.databases = [
     {
