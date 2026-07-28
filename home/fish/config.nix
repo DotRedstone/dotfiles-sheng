@@ -108,6 +108,7 @@
 
       # --- NixOS Management (nh/nrs) ---
       nrs    = "nh os switch ~/dotfiles-sheng -H sheng";
+      nrs-niri = "nh os switch ~/dotfiles-sheng -H sheng-niri";
       nrb    = "nh os boot ~/dotfiles-sheng -H sheng";
       nsl    = "sudo nix-env -p /nix/var/nix/profiles/system --list-generations";
       nsd    = "sudo nix-env -p /nix/var/nix/profiles/system --delete-generations";

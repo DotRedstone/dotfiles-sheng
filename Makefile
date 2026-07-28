@@ -1,8 +1,12 @@
-.PHONY: nrs hms update
+.PHONY: nrs nrs-niri hms update
 
 # nixos-rebuild switch: 部署整个操作系统的系统级配置（需要 root）
 nrs:
 	sudo nixos-rebuild switch --flake .#sheng
+
+# 部署 Niri 桌面配置
+nrs-niri:
+	sudo nixos-rebuild switch --flake .#sheng-niri
 
 # home-manager switch: 部署用户级的应用和环境（不需要 root）
 hms:

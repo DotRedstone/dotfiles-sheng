@@ -19,6 +19,7 @@
     ./firefox
     ./ibus
     ./nautilus
+    ./niri
     ./telegram
     ./wechat
     ./yazi
@@ -52,6 +53,7 @@
     enableCompletion = true;
     shellAliases = {
       nrs = "nh os switch ~/dotfiles-sheng -H sheng";
+      nrs-niri = "nh os switch ~/dotfiles-sheng -H sheng-niri";
       hms = "nh home switch ~/dotfiles-sheng -c dot@sheng";
     };
   };

@@ -8,8 +8,8 @@ GitHub. You do not need to clone `nixos-sheng` next to this repository.
 
 ## Features
 
-- **Multi-Desktop Environment Support**: Easily switch between GNOME, KDE Plasma, Phosh, and Hyprland without reinstalling the system.
-- **Touch & Mobile Optimizations**: Hardware sensors enabled for auto-rotation, native Wayland virtual keyboards configured for Plasma (`maliit`) and Hyprland (`wvkbd`).
+- **Multi-Desktop Environment Support**: Easily switch between GNOME, KDE Plasma, Phosh, Hyprland, and Niri without reinstalling the system.
+- **Touch & Mobile Optimizations**: Hardware sensors enabled for auto-rotation, with native Wayland virtual keyboards and touch controls for alternative desktops.
 - **Memory Optimized**: ZRAM is enabled globally with a 50% threshold to maximize tablet multitasking performance. GNOME background bloat is stripped out by default.
 
 ## Available Desktop Profiles
@@ -32,6 +32,12 @@ You can seamlessly switch your entire desktop environment by deploying different
    Extremely lightweight Wayland compositor for advanced power users.
    *Command*: `nh os switch ~/dotfiles-sheng -H sheng-hyprland`
 
+5. **Niri** - `sheng-niri`
+   Scrollable tiling Wayland compositor with a sheng-specific 2x display
+   layout, touch controls, on-screen keyboard, automatic rotation, and cover
+   handling.
+   *Command*: `nh os switch ~/dotfiles-sheng -H sheng-niri`
+
 ## Performance & Storage Metrics
 
 Here is the NixOS closure size footprint for each desktop environment configuration (compiled natively for `aarch64-linux`):
@@ -40,6 +46,7 @@ Here is the NixOS closure size footprint for each desktop environment configurat
 | :--- | :--- | :--- | :--- | :--- |
 | **GNOME** | `sheng` | **7.3 GiB** | ✅ Success | The default upstream experience. Heavy but feature-complete. |
 | **Hyprland** | `sheng-hyprland` | **6.7 GiB** | ✅ Success | The lightest compositor available, saving over 600MB compared to GNOME. |
+| **Niri** | `sheng-niri` | - | 🧪 Ready to test | Touch-oriented profile with Waybar, wvkbd, and Xwayland Satellite. |
 | **KDE Plasma 6** | `sheng-plasma` | - | ⚠️ Failed | Linking `qtwebengine` may cause Out-Of-Memory (OOM) on 8GB devices. Binary cache is recommended. |
 | **Phosh** | `sheng-phosh` | **7.6 GiB** | ✅ Success | Minimal touch interface, optimized for mobile devices. |
 

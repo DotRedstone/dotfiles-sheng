@@ -79,17 +79,44 @@
         "type": "github"
       }
     },
-    "nixpkgs": {
+    "nixos-sheng": {
+      "inputs": {
+        "home-manager": "home-manager_2",
+        "mobile-nixos": "mobile-nixos",
+        "nixpkgs": "nixpkgs",
+        "shengFirmware": [
+          "shengFirmware"
+        ],
+        "shengKernelSrc": "shengKernelSrc"
+      },
       "locked": {
-        "lastModified": 1781577229,
-        "narHash": "sha256-lrp67w8AulE9Ks53n27I45ADSzbOCn4H+CNW1Ck8B+8=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+        "dir": "nixos",
+        "lastModified": 1785216527,
+        "narHash": "sha256-S3EWutd5UxXHPwA9zJ1mkRw/bKLuCX4AP8xHYZ9Fl0I=",
+        "owner": "DotRedstone",
+        "repo": "nixos-sheng",
+        "rev": "05c4719908b83076af3c789cfddb8384348b4a59",
         "type": "github"
       },
       "original": {
-        "owner": "nixos",
+        "dir": "nixos",
+        "owner": "DotRedstone",
+        "ref": "v0.1.4",
+        "repo": "nixos-sheng",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1781074563,
+        "narHash": "sha256-md8WlXOlfnIeHeOScMTTHFyf2d6iaTwPl2apR5EQ3P4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
         "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
@@ -99,13 +126,13 @@
       "locked": {
         "lastModified": 1781577229,
         "narHash": "sha256-lrp67w8AulE9Ks53n27I45ADSzbOCn4H+CNW1Ck8B+8=",
-        "owner": "NixOS",
+        "owner": "nixos",
         "repo": "nixpkgs",
         "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
+        "owner": "nixos",
         "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
@@ -113,11 +140,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1781074563,
-        "narHash": "sha256-md8WlXOlfnIeHeOScMTTHFyf2d6iaTwPl2apR5EQ3P4=",
+        "lastModified": 1781577229,
+        "narHash": "sha256-lrp67w8AulE9Ks53n27I45ADSzbOCn4H+CNW1Ck8B+8=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
+        "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
         "type": "github"
       },
       "original": {
@@ -152,15 +179,15 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs",
+        "nixos-sheng": "nixos-sheng",
+        "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim",
-        "shengFirmware": "shengFirmware",
-        "nixos-sheng": "nixos-sheng"
+        "shengFirmware": "shengFirmware"
       }
     },
     "shengFirmware": {
       "inputs": {
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1780941415,
@@ -207,33 +234,6 @@
         "owner": "nix-systems",
         "ref": "future-26.11",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "nixos-sheng": {
-      "inputs": {
-        "home-manager": "home-manager_2",
-        "mobile-nixos": "mobile-nixos",
-        "nixpkgs": "nixpkgs_3",
-        "shengFirmware": [
-          "shengFirmware"
-        ],
-        "shengKernelSrc": "shengKernelSrc"
-      },
-      "locked": {
-        "dir": "nixos",
-        "lastModified": 1781802682,
-        "narHash": "sha256-fI4xUP3JBwxJXO8KSX82OQJ1tB8Zp+gKxjBhpUh71Bg=",
-        "owner": "DotRedstone",
-        "repo": "nixos-sheng",
-        "rev": "9b8546296ed1bebe42d0a618d464f69624c6e716",
-        "type": "github"
-      },
-      "original": {
-        "dir": "nixos",
-        "owner": "DotRedstone",
-        "ref": "sheng",
-        "repo": "nixos-sheng",
         "type": "github"
       }
     }

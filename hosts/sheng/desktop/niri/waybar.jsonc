@@ -1,0 +1,99 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 50,
+  "spacing": 8,
+  "margin-top": 8,
+  "margin-left": 10,
+  "margin-right": 10,
+
+  "modules-left": [
+    "custom/launcher",
+    "custom/overview",
+    "niri/workspaces",
+    "niri/window"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "tray",
+    "custom/osk",
+    "network",
+    "bluetooth",
+    "pulseaudio",
+    "backlight",
+    "battery",
+    "custom/power"
+  ],
+
+  "custom/launcher": {
+    "format": "APPS",
+    "tooltip": false,
+    "on-click": "fuzzel"
+  },
+  "custom/overview": {
+    "format": "OVERVIEW",
+    "tooltip": false,
+    "on-click": "niri msg action toggle-overview"
+  },
+  "custom/osk": {
+    "format": "KBD",
+    "tooltip-format": "Toggle touch keyboard",
+    "on-click": "sheng-niri-osk-toggle"
+  },
+  "custom/power": {
+    "format": "POWER",
+    "tooltip-format": "Session and power menu",
+    "on-click": "wlogout"
+  },
+
+  "niri/workspaces": {
+    "format": "{index}",
+    "on-click": "activate"
+  },
+  "niri/window": {
+    "format": "{title}",
+    "max-length": 42,
+    "separate-outputs": true
+  },
+  "clock": {
+    "format": "{:%H:%M}",
+    "format-alt": "{:%Y-%m-%d  %A}",
+    "tooltip-format": "<tt>{calendar}</tt>"
+  },
+  "network": {
+    "format-wifi": "WIFI {signalStrength}%",
+    "format-ethernet": "LAN",
+    "format-disconnected": "OFFLINE",
+    "tooltip-format-wifi": "{essid}\n{ipaddr}"
+  },
+  "bluetooth": {
+    "format": "BT",
+    "format-disabled": "BT OFF",
+    "format-connected": "BT {num_connections}"
+  },
+  "pulseaudio": {
+    "format": "VOL {volume}%",
+    "format-muted": "MUTED",
+    "scroll-step": 5,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "backlight": {
+    "format": "BRI {percent}%",
+    "on-scroll-up": "brightnessctl set +5%",
+    "on-scroll-down": "brightnessctl set 5%-"
+  },
+  "battery": {
+    "states": {
+      "warning": 25,
+      "critical": 10
+    },
+    "format": "BAT {capacity}%",
+    "format-charging": "CHG {capacity}%",
+    "tooltip-format": "{timeTo}"
+  },
+  "tray": {
+    "spacing": 10
+  }
+}

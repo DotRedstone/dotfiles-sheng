@@ -19,7 +19,7 @@
     # 引用 sheng 硬件仓库。普通用户只需要 clone 本仓库，
     # 不需要在本地额外 clone nixos-sheng。
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/sheng?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/v0.1.4?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
@@ -38,12 +38,15 @@
     # 基础配置模块，所有桌面环境共享
     shengBaseModules = [
       # 传入 inputs，方便在下游 configuration.nix 中随意调用外部 flake
-      {
+      ({ lib, ... }: {
         _module.args.inputs = inputs;
+        # Device-side rebuilds must reuse the kernel, modules, and firmware
+        # already installed by the flashed boot/rootfs pair.
+        _module.args.stage2Only = lib.mkForce true;
         environment.systemPackages = [
           home-manager.packages.${system}.default
         ];
-      }
+      })
       # 引入你的专属系统配置
       ./hosts/sheng/configuration.nix
       ./hosts/sheng/input-method.nix
@@ -70,6 +73,12 @@
       # 部署命令: nh os switch ~/dotfiles-sheng -H sheng-hyprland
       sheng-hyprland = nixos-sheng.lib.${system}.mkShengSystem (shengBaseModules ++ [
         ./hosts/sheng/desktop/hyprland.nix
+      ]);
+
+      # 5. Niri 滚动平铺 Wayland 桌面
+      # 部署命令: nh os switch ~/dotfiles-sheng -H sheng-niri
+      sheng-niri = nixos-sheng.lib.${system}.mkShengSystem (shengBaseModules ++ [
+        ./hosts/sheng/desktop/niri.nix
       ]);
     };
 

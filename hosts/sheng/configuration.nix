@@ -34,6 +34,7 @@
   # 使用时先 cd 到本 dotfiles 仓库，再执行 nrs / hms。
   environment.shellAliases = {
     nrs = "nh os switch ~/dotfiles-sheng -H sheng";
+    nrs-niri = "nh os switch ~/dotfiles-sheng -H sheng-niri";
     hms = "nh home switch ~/dotfiles-sheng -c dot@sheng";
   };
 
