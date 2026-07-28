@@ -4,7 +4,12 @@
 # Scope: System
 # ---
 
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   niriDisplay = pkgs.writeShellScriptBin "sheng-niri-display" ''
@@ -291,6 +296,11 @@ in
     TERMINAL = "wezterm";
   };
 
+  environment.shellAliases = {
+    nrs = lib.mkForce "nh os switch ~/dotfiles-sheng -H sheng-niri";
+    hms = lib.mkForce "nh home switch ~/dotfiles-sheng -c dot@sheng-niri";
+  };
+
   environment.etc = {
     "niri/config.kdl".source = ./niri/config.kdl;
     "xdg/swaylock/config".source = ./niri/swaylock.conf;
@@ -326,6 +336,18 @@ in
       TERMINAL = "wezterm";
     };
     serviceConfig.RestartSec = 2;
+  };
+
+  systemd.user.services.fcitx5-daemon = {
+    description = "Fcitx5 input method for the Niri session";
+    wantedBy = [ "niri.service" ];
+    partOf = [ "niri.service" ];
+    after = [ "niri.service" ];
+    serviceConfig = {
+      ExecStart = "${config.i18n.inputMethod.package}/bin/fcitx5 --replace";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
   };
 
   systemd.user.services.sheng-niri-display-controls = {

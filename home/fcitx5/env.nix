@@ -10,7 +10,7 @@
     QT_IM_MODULE = "fcitx";
     XMODIFIERS = "@im=fcitx";
     SDL_IM_MODULE = "fcitx";
-    GLFW_IM_MODULE = "ibus";
+    GLFW_IM_MODULE = "fcitx";
   };
 
   xdg.configFile."environment.d/90-fcitx5.conf".text = ''
@@ -18,6 +18,6 @@
     QT_IM_MODULE=fcitx
     XMODIFIERS=@im=fcitx
     SDL_IM_MODULE=fcitx
-    GLFW_IM_MODULE=ibus
+    GLFW_IM_MODULE=fcitx
   '';
 }

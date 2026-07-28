@@ -54,13 +54,14 @@
       })
       # 引入你的专属系统配置
       ./hosts/sheng/configuration.nix
-      ./hosts/sheng/input-method.nix
     ];
   in {
     nixosConfigurations = {
       # 1. GNOME 桌面环境 (使用上游预设)
       # 部署命令: nh os switch ~/dotfiles-sheng -H sheng
-      sheng = nixos-sheng.lib.${system}.mkShengGnomeSystem shengBaseModules;
+      sheng = nixos-sheng.lib.${system}.mkShengGnomeSystem (shengBaseModules ++ [
+        ./hosts/sheng/input-method.nix
+      ]);
 
       # 2. KDE Plasma 6 桌面环境
       # 部署命令: nh os switch ~/dotfiles-sheng -H sheng-plasma
@@ -83,8 +84,17 @@
       # 5. Niri 滚动平铺 Wayland 桌面
       # 部署命令: nh os switch ~/dotfiles-sheng -H sheng-niri
       sheng-niri = nixos-sheng.lib.${system}.mkShengSystem (shengBaseModules ++ [
+        inputs.home-manager.nixosModules.home-manager
         inputs.noctalia.nixosModules.default
+        ./hosts/sheng/input-method-fcitx5.nix
         ./hosts/sheng/desktop/niri.nix
+        ({ ... }: {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.dot = import ./home/sheng-niri.nix;
+          };
+        })
       ]);
     };
 
@@ -95,6 +105,13 @@
       modules = [
         ./home/dot.nix
         inputs.nixvim.homeModules.nixvim
+      ];
+    };
+
+    homeConfigurations."dot@sheng-niri" = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+      modules = [
+        ./home/sheng-niri.nix
       ];
     };
   };
