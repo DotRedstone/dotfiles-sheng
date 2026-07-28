@@ -44,6 +44,10 @@
     };
   };
 
+  # nixos-sheng v0.1.4 ships the sheng UCM package but does not link its
+  # /share/alsa payload into the system profile.
+  environment.pathsToLink = [ "/share/alsa" ];
+
   # 全局系统包 (这里只装最底层的必备工具，应用软件建议丢进 home.nix)
   environment.systemPackages = with pkgs; [
     git
