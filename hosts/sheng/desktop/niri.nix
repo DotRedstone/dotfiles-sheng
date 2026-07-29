@@ -19,6 +19,20 @@ let
     ]
   );
 
+  oskTypelibPath = lib.makeSearchPath "lib/girepository-1.0" (
+    map lib.getLib [
+      pkgs.at-spi2-core
+      pkgs.gdk-pixbuf
+      pkgs.glib
+      pkgs.gobject-introspection
+      pkgs.graphene
+      pkgs.gtk4
+      pkgs.gtk4-layer-shell
+      pkgs.harfbuzz
+      pkgs.pango
+    ]
+  );
+
   niriOsk = pkgs.stdenvNoCC.mkDerivation {
     pname = "sheng-niri-osk";
     version = "1.0.0";
@@ -46,6 +60,7 @@ let
       makeWrapper ${oskPython}/bin/python3 "$out/bin/sheng-niri-osk" \
         --add-flags "$out/libexec/sheng_osk.py" \
         --set LD_PRELOAD "${lib.getLib pkgs.gtk4-layer-shell}/lib/libgtk4-layer-shell.so" \
+        --prefix GI_TYPELIB_PATH : "${oskTypelibPath}" \
         "''${gappsWrapperArgs[@]}"
     '';
   };
