@@ -30,6 +30,8 @@ BACKEND_INTERFACE = "org.fcitx.Fcitx5.VirtualKeyboardBackend1"
 FCITX_NAME = "org.fcitx.Fcitx5"
 FCITX_PATH = "/virtualkeyboard"
 FCITX_INTERFACE = "org.fcitx.Fcitx.VirtualKeyboard1"
+CONTROLLER_PATH = "/controller"
+CONTROLLER_INTERFACE = "org.fcitx.Fcitx.Controller1"
 
 SHIFT_STATE = 1
 CTRL_STATE = 4
@@ -142,11 +144,22 @@ button.flat-control {
   border-color: transparent;
 }
 
-.resize-handle {
-  min-width: 48px;
-  color: #a7b5bf;
-  font-size: 24px;
-  padding: 0 4px;
+.resize-edge {
+  background: rgba(77, 197, 220, 0.32);
+}
+
+.resize-edge.horizontal {
+  min-height: 18px;
+}
+
+.resize-edge.vertical {
+  min-width: 18px;
+}
+
+.resize-edge.corner {
+  min-width: 32px;
+  min-height: 32px;
+  background: rgba(77, 197, 220, 0.62);
 }
 """
 
@@ -242,6 +255,9 @@ class ShengOsk(Gtk.Application):
         self.previous_button = None
         self.next_button = None
         self.input_method_label = None
+        self.language_button = None
+        self.adjust_button = None
+        self.drag_hint = None
         self.key_area = None
         self.shift_button = None
         self.layer_button = None
@@ -258,8 +274,12 @@ class ShengOsk(Gtk.Application):
         self.page = -1
         self.geometry = self.load_geometry()
         self.drag_origin = (0, 0)
-        self.resize_origin = (DEFAULT_WIDTH, DEFAULT_HEIGHT)
-        self.zoom_origin = (DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        self.resize_origin = None
+        self.resize_direction = ""
+        self.resize_edges = []
+        self.adjusting = False
+        self.input_method_active = False
+        self.current_input_method = ""
         self.held = False
         self.priming = False
         self.primed = False
@@ -352,10 +372,13 @@ class ShengOsk(Gtk.Application):
         Gtk4LayerShell.set_anchor(self.window, Gtk4LayerShell.Edge.TOP, True)
         Gtk4LayerShell.set_anchor(self.window, Gtk4LayerShell.Edge.LEFT, True)
 
+        overlay = Gtk.Overlay()
+        self.window.set_child(overlay)
+
         self.shell = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
         self.shell.add_css_class("keyboard-shell")
         self.shell.set_size_request(self.geometry["width"], self.geometry["height"])
-        self.window.set_child(self.shell)
+        overlay.set_child(self.shell)
 
         self.shell.append(self.build_header())
         self.shell.append(self.build_candidate_bar())
@@ -365,14 +388,10 @@ class ShengOsk(Gtk.Application):
         self.shell.append(self.key_area)
         self.rebuild_keys()
 
-        zoom = Gtk.GestureZoom()
-        zoom.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
-        zoom.connect("begin", self.on_zoom_begin)
-        zoom.connect("scale-changed", self.on_zoom_changed)
-        zoom.connect("end", self.on_zoom_end)
-        self.shell.add_controller(zoom)
+        self.build_resize_edges(overlay)
 
         self.apply_position()
+        self.query_input_method_state()
 
     def build_header(self):
         header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -384,11 +403,11 @@ class ShengOsk(Gtk.Application):
         grip.add_css_class("drag-hint")
         title = Gtk.Label(label="浮动键盘")
         title.add_css_class("drag-title")
-        hint = Gtk.Label(label="拖动移动 · 双指缩放")
-        hint.add_css_class("drag-hint")
+        self.drag_hint = Gtk.Label(label="拖动移动")
+        self.drag_hint.add_css_class("drag-hint")
         handle.append(grip)
         handle.append(title)
-        handle.append(hint)
+        handle.append(self.drag_hint)
         drag = Gtk.GestureDrag()
         drag.connect("drag-begin", self.on_drag_begin)
         drag.connect("drag-update", self.on_drag_update)
@@ -399,6 +418,10 @@ class ShengOsk(Gtk.Application):
         self.input_method_label = Gtk.Label(label="Fcitx")
         self.input_method_label.add_css_class("im-label")
         header.append(self.input_method_label)
+
+        self.adjust_button = self.make_control_button("调整", "调整位置和大小")
+        self.adjust_button.connect("clicked", self.toggle_adjust_mode)
+        header.append(self.adjust_button)
 
         reset = self.make_control_button("重置", "重置位置和大小")
         reset.connect("clicked", self.on_reset_geometry)
@@ -530,13 +553,14 @@ class ShengOsk(Gtk.Application):
         self.layer_button.set_size_request(92, -1)
         comma = self.make_key(",", lambda: self.send_character(","), expand=False)
         comma.set_size_request(68, -1)
-        language = self.make_key(
+        self.language_button = self.make_key(
             "中/英",
-            lambda: self.send_shortcut("space", CTRL_STATE),
+            self.toggle_input_method,
             special=True,
             expand=False,
         )
-        language.set_size_request(82, -1)
+        self.language_button.set_size_request(82, -1)
+        self.update_input_method_labels()
         space = self.make_key("空格", lambda: self.send_named_key("space"))
         period = self.make_key(".", lambda: self.send_character("."), expand=False)
         period.set_size_request(68, -1)
@@ -545,20 +569,50 @@ class ShengOsk(Gtk.Application):
         )
         enter.set_size_request(92, -1)
 
-        resize_handle = Gtk.Label(label="◢")
-        resize_handle.add_css_class("resize-handle")
-        resize_handle.set_tooltip_text("拖动调整键盘大小")
-        resize = Gtk.GestureDrag()
-        resize.connect("drag-begin", self.on_resize_begin)
-        resize.connect("drag-update", self.on_resize_update)
-        resize.connect("drag-end", self.on_resize_end)
-        resize_handle.add_controller(resize)
-
         bottom = self.make_key_row(
-            [self.layer_button, comma, language, space, period, enter]
+            [
+                self.layer_button,
+                comma,
+                self.language_button,
+                space,
+                period,
+                enter,
+            ]
         )
-        bottom.append(resize_handle)
         self.key_area.append(bottom)
+
+    def build_resize_edges(self, overlay):
+        edge_specs = [
+            ("top", Gtk.Align.FILL, Gtk.Align.START, "horizontal"),
+            ("bottom", Gtk.Align.FILL, Gtk.Align.END, "horizontal"),
+            ("left", Gtk.Align.START, Gtk.Align.FILL, "vertical"),
+            ("right", Gtk.Align.END, Gtk.Align.FILL, "vertical"),
+            ("top-left", Gtk.Align.START, Gtk.Align.START, "corner"),
+            ("top-right", Gtk.Align.END, Gtk.Align.START, "corner"),
+            ("bottom-left", Gtk.Align.START, Gtk.Align.END, "corner"),
+            ("bottom-right", Gtk.Align.END, Gtk.Align.END, "corner"),
+        ]
+        for direction, horizontal, vertical, style in edge_specs:
+            edge = Gtk.Box()
+            edge.add_css_class("resize-edge")
+            edge.add_css_class(style)
+            edge.set_halign(horizontal)
+            edge.set_valign(vertical)
+            edge.set_hexpand(horizontal == Gtk.Align.FILL)
+            edge.set_vexpand(vertical == Gtk.Align.FILL)
+            edge.set_visible(False)
+            drag = Gtk.GestureDrag()
+            drag.connect(
+                "drag-begin",
+                lambda gesture, x, y, direction=direction: self.on_resize_begin(
+                    gesture, x, y, direction
+                ),
+            )
+            drag.connect("drag-update", self.on_resize_update)
+            drag.connect("drag-end", self.on_resize_end)
+            edge.add_controller(drag)
+            overlay.add_overlay(edge)
+            self.resize_edges.append(edge)
 
     def character_key(self, value):
         label = value
@@ -634,6 +688,79 @@ class ShengOsk(Gtk.Application):
         keyval = Gdk.keyval_from_name(name)
         if keyval:
             self.send_keyval(keyval, state)
+
+    def toggle_input_method(self):
+        if self.bus is None:
+            return
+        self.ignore_hide_token += 1
+        token = self.ignore_hide_token
+        self.bus.call(
+            Message(
+                destination=FCITX_NAME,
+                path=CONTROLLER_PATH,
+                interface=CONTROLLER_INTERFACE,
+                member="Toggle",
+            ),
+            self.on_input_method_toggled,
+        )
+        GLib.timeout_add(900, self.expire_transient_hide, token)
+
+    def on_input_method_toggled(self, _reply, _error):
+        GLib.timeout_add(80, self.refresh_input_method_after_toggle)
+
+    def refresh_input_method_after_toggle(self):
+        self.query_input_method_state()
+        self.request_visibility("ShowVirtualKeyboard")
+        return GLib.SOURCE_REMOVE
+
+    def query_input_method_state(self):
+        if self.bus is None:
+            return GLib.SOURCE_REMOVE
+        self.bus.call(
+            Message(
+                destination=FCITX_NAME,
+                path=CONTROLLER_PATH,
+                interface=CONTROLLER_INTERFACE,
+                member="State",
+            ),
+            self.on_input_method_state,
+        )
+        return GLib.SOURCE_REMOVE
+
+    def on_input_method_state(self, reply, error):
+        if (
+            error is None
+            and reply is not None
+            and reply.message_type != MessageType.ERROR
+            and reply.body
+        ):
+            GLib.idle_add(self.set_input_method_active, reply.body[0] == 2)
+
+    def set_input_method_active(self, active):
+        self.input_method_active = active
+        self.update_input_method_labels()
+        if not active:
+            self.set_preedit("")
+            self.set_candidates([], False, False, -1, -1)
+        return GLib.SOURCE_REMOVE
+
+    def update_input_method_labels(self):
+        if self.input_method_label is not None:
+            label = "中文"
+            if self.input_method_active and self.current_input_method:
+                label = f"中文 · {self.current_input_method}"
+            elif not self.input_method_active:
+                label = "English"
+            self.input_method_label.set_label(label)
+        if self.language_button is not None:
+            if self.input_method_active:
+                self.language_button.set_label("中")
+                self.language_button.set_tooltip_text("切换到 English")
+                self.language_button.add_css_class("active-key")
+            else:
+                self.language_button.set_label("EN")
+                self.language_button.set_tooltip_text("切换到中文")
+                self.language_button.remove_css_class("active-key")
 
     def send_keyval(self, keyval, state):
         timestamp = int(time.monotonic() * 1000) & 0xFFFFFFFF
@@ -725,6 +852,7 @@ class ShengOsk(Gtk.Application):
         return GLib.SOURCE_REMOVE
 
     def hide_keyboard(self, _reason=""):
+        self.set_adjust_mode(False)
         if self.window is not None:
             self.window.set_visible(False)
         self.backend_call("ProcessVisibilityEvent", "b", [False])
@@ -794,9 +922,12 @@ class ShengOsk(Gtk.Application):
         return GLib.SOURCE_REMOVE
 
     def set_input_method(self, unique_name):
-        if self.input_method_label is not None:
-            label = unique_name.split(":")[0] if unique_name else "Fcitx"
-            self.input_method_label.set_label(label)
+        self.current_input_method = unique_name.split(":")[0] if unique_name else ""
+        self.input_method_active = bool(
+            self.current_input_method
+            and not self.current_input_method.startswith("keyboard-")
+        )
+        self.update_input_method_labels()
         return GLib.SOURCE_REMOVE
 
     def output_size(self):
@@ -850,32 +981,73 @@ class ShengOsk(Gtk.Application):
     def on_drag_end(self, _gesture, _offset_x, _offset_y):
         self.save_geometry()
 
-    def on_resize_begin(self, _gesture, _x, _y):
-        self.resize_origin = (
-            self.geometry["width"],
-            self.geometry["height"],
-        )
+    def toggle_adjust_mode(self, _button):
+        self.set_adjust_mode(not self.adjusting)
+
+    def set_adjust_mode(self, active):
+        self.adjusting = active
+        for edge in self.resize_edges:
+            edge.set_visible(active)
+        if self.adjust_button is not None:
+            self.adjust_button.set_label("完成" if active else "调整")
+            if active:
+                self.adjust_button.add_css_class("active-key")
+            else:
+                self.adjust_button.remove_css_class("active-key")
+        if self.drag_hint is not None:
+            self.drag_hint.set_label("拖动边缘或四角缩放" if active else "拖动移动")
+
+    def on_resize_begin(self, _gesture, _x, _y, direction):
+        self.resize_direction = direction
+        self.resize_origin = dict(self.geometry)
 
     def on_resize_update(self, _gesture, offset_x, offset_y):
-        self.geometry["width"] = int(self.resize_origin[0] + offset_x)
-        self.geometry["height"] = int(self.resize_origin[1] + offset_y)
+        if self.resize_origin is None:
+            return
+        origin = self.resize_origin
+        screen_width, screen_height = self.output_size()
+        max_width = min(MAX_WIDTH, screen_width - EDGE_MARGIN * 2)
+        max_height = min(MAX_HEIGHT, screen_height - EDGE_MARGIN * 2)
+        left = origin["x"]
+        top = origin["y"]
+        right = left + origin["width"]
+        bottom = top + origin["height"]
+
+        if "left" in self.resize_direction:
+            left = clamp(
+                int(origin["x"] + offset_x),
+                max(EDGE_MARGIN, right - max_width),
+                right - MIN_WIDTH,
+            )
+        elif "right" in self.resize_direction:
+            right = clamp(
+                int(origin["x"] + origin["width"] + offset_x),
+                origin["x"] + MIN_WIDTH,
+                min(screen_width - EDGE_MARGIN, origin["x"] + max_width),
+            )
+
+        if "top" in self.resize_direction:
+            top = clamp(
+                int(origin["y"] + offset_y),
+                max(EDGE_MARGIN, bottom - max_height),
+                bottom - MIN_HEIGHT,
+            )
+        elif "bottom" in self.resize_direction:
+            bottom = clamp(
+                int(origin["y"] + origin["height"] + offset_y),
+                origin["y"] + MIN_HEIGHT,
+                min(screen_height - EDGE_MARGIN, origin["y"] + max_height),
+            )
+
+        self.geometry["x"] = left
+        self.geometry["y"] = top
+        self.geometry["width"] = right - left
+        self.geometry["height"] = bottom - top
         self.apply_position()
 
     def on_resize_end(self, _gesture, _offset_x, _offset_y):
-        self.save_geometry()
-
-    def on_zoom_begin(self, _gesture, _sequence=None):
-        self.zoom_origin = (
-            self.geometry["width"],
-            self.geometry["height"],
-        )
-
-    def on_zoom_changed(self, _gesture, scale):
-        self.geometry["width"] = int(self.zoom_origin[0] * scale)
-        self.geometry["height"] = int(self.zoom_origin[1] * scale)
-        self.apply_position()
-
-    def on_zoom_end(self, _gesture, _sequence=None):
+        self.resize_origin = None
+        self.resize_direction = ""
         self.save_geometry()
 
     def on_reset_geometry(self, _button):
