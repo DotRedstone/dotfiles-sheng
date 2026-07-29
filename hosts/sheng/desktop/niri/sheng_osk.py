@@ -100,7 +100,7 @@ window.sheng-osk {
   font-weight: 600;
 }
 
-.drag-hint, .im-label {
+.drag-hint {
   color: #a9a5c1;
   font-size: 13px;
 }
@@ -172,6 +172,7 @@ button.candidate:selected, button.candidate.current {
 button.flat-control {
   min-height: 34px;
   min-width: 42px;
+  padding: 0;
   background: transparent;
   border-color: transparent;
 }
@@ -240,18 +241,16 @@ button.flat-control.active-key {
 
 .settings-panel {
   background: transparent;
-  padding: 12px;
-}
-
-.settings-title {
-  color: #f5f3ff;
-  font-size: 18px;
-  font-weight: 600;
+  padding: 8px 12px;
 }
 
 .settings-label {
-  color: #d9d5e8;
-  font-size: 15px;
+  color: #cbc7dc;
+  font-size: 13px;
+}
+
+.settings-icon {
+  color: #a9a5c1;
 }
 
 .settings-value {
@@ -301,8 +300,19 @@ button.accent-mint { background: #9eddb3; }
 button.accent-rose { background: #f1b5c8; }
 
 button.settings-command {
+  min-width: 42px;
   min-height: 38px;
-  padding: 0 14px;
+  padding: 0;
+}
+
+button.space-key.dragging {
+  background: @ACCENT@;
+  border-color: @ACCENT@;
+  color: @ON_ACCENT@;
+}
+
+.space-hint {
+  color: #8f8aa8;
 }
 """
 
@@ -417,6 +427,9 @@ class ShengOsk(Gtk.Application):
         self.key_area = None
         self.shift_button = None
         self.layer_button = None
+        self.space_button = None
+        self.space_dragged = False
+        self.space_drag_steps = 0
         self.layer = "letters"
         self.symbol_page = 0
         self.shift_mode = "off"
@@ -639,13 +652,11 @@ class ShengOsk(Gtk.Application):
         handle.set_hexpand(True)
         grip = Gtk.Label(label="⠿")
         grip.add_css_class("drag-hint")
-        title = Gtk.Label(label="浮动键盘")
+        title = Gtk.Label(label="键盘")
         title.add_css_class("drag-title")
-        self.drag_hint = Gtk.Label(label="拖动移动")
-        self.drag_hint.add_css_class("drag-hint")
         handle.append(grip)
         handle.append(title)
-        handle.append(self.drag_hint)
+        handle.set_tooltip_text("拖动移动键盘")
         drag = Gtk.GestureDrag()
         drag.connect("drag-begin", self.on_drag_begin)
         drag.connect("drag-update", self.on_drag_update)
@@ -653,27 +664,27 @@ class ShengOsk(Gtk.Application):
         handle.add_controller(drag)
         header.append(handle)
 
-        self.input_method_label = Gtk.Label(label="Fcitx")
-        self.input_method_label.add_css_class("im-label")
-        header.append(self.input_method_label)
-
-        self.settings_button = self.make_control_button("设置", "个性化设置")
+        self.settings_button = self.make_icon_control_button(
+            "preferences-system-symbolic", "外观设置"
+        )
         self.settings_button.connect("clicked", self.toggle_settings)
         header.append(self.settings_button)
 
-        self.adjust_button = self.make_control_button("调整", "调整位置和大小")
+        self.adjust_button = self.make_icon_control_button(
+            "transform-scale-symbolic", "调整位置和大小"
+        )
         self.adjust_button.connect("clicked", self.toggle_adjust_mode)
         header.append(self.adjust_button)
 
-        reset = self.make_control_button("重置", "重置位置和大小")
+        reset = self.make_icon_control_button("edit-undo-symbolic", "重置位置和大小")
         reset.connect("clicked", self.on_reset_geometry)
         header.append(reset)
 
-        paste = self.make_control_button("粘贴", "粘贴剪贴板")
+        paste = self.make_icon_control_button("edit-paste-symbolic", "粘贴")
         paste.connect("clicked", lambda _button: self.send_shortcut("v", CTRL_STATE))
         header.append(paste)
 
-        close = self.make_control_button("收起", "收起键盘")
+        close = self.make_icon_control_button("go-down-symbolic", "收起键盘")
         close.connect(
             "clicked", lambda _button: self.request_visibility("HideVirtualKeyboard")
         )
@@ -690,27 +701,38 @@ class ShengOsk(Gtk.Application):
         panel.set_margin_start(8)
         panel.set_margin_end(8)
 
-        title = Gtk.Label(label="外观")
-        title.add_css_class("settings-title")
-        title.set_xalign(0)
-        panel.append(title)
-
         controls = [
-            ("键盘圆角", "shell_radius", 0, 24, 1),
-            ("按键圆角", "key_radius", 0, 18, 1),
-            ("背景透明度", "opacity", 0.82, 1.0, 0.01),
-            ("按键高度", "key_height", 46, 68, 1),
-            ("按键字号", "font_size", 16, 23, 1),
-            ("键盘内边距", "shell_padding", 6, 16, 1),
-            ("调整提示强度", "handle_opacity", 0.25, 1.0, 0.05),
+            (
+                "preferences-desktop-appearance-symbolic",
+                "外框",
+                "shell_radius",
+                0,
+                24,
+                1,
+            ),
+            ("input-keyboard-symbolic", "按键", "key_radius", 0, 18, 1),
+            ("view-reveal-symbolic", "透明", "opacity", 0.82, 1.0, 0.01),
+            ("view-fullscreen-symbolic", "键高", "key_height", 46, 68, 1),
+            ("format-text-bold-symbolic", "字号", "font_size", 16, 23, 1),
+            ("zoom-fit-best-symbolic", "边距", "shell_padding", 6, 16, 1),
+            (
+                "transform-scale-symbolic",
+                "手柄",
+                "handle_opacity",
+                0.25,
+                1.0,
+                0.05,
+            ),
         ]
-        for label, key, low, high, step in controls:
-            panel.append(self.build_preference_slider(label, key, low, high, step))
+        for icon, label, key, low, high, step in controls:
+            panel.append(
+                self.build_preference_slider(icon, label, key, low, high, step)
+            )
 
         panel.append(Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL))
         panel.append(self.build_accent_picker())
 
-        shadow_row = self.make_setting_row("窗口阴影")
+        shadow_row = self.make_setting_row("weather-fog-symbolic", "阴影")
         shadow_switch = Gtk.Switch()
         shadow_switch.set_active(self.preferences["shadow"])
         shadow_switch.set_valign(Gtk.Align.CENTER)
@@ -721,8 +743,12 @@ class ShengOsk(Gtk.Application):
 
         footer = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         footer.set_halign(Gtk.Align.END)
-        reset = Gtk.Button(label="恢复外观默认")
+        reset = Gtk.Button()
         reset.add_css_class("settings-command")
+        reset_image = Gtk.Image.new_from_icon_name("edit-undo-symbolic")
+        reset_image.set_pixel_size(20)
+        reset.set_child(reset_image)
+        reset.set_tooltip_text("恢复默认外观")
         reset.connect("clicked", self.on_reset_preferences)
         footer.append(reset)
         panel.append(footer)
@@ -730,17 +756,23 @@ class ShengOsk(Gtk.Application):
         scroll.set_child(panel)
         return scroll
 
-    def make_setting_row(self, label):
+    def make_setting_row(self, icon_name, label):
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        leading = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        leading.set_size_request(108, -1)
+        icon = Gtk.Image.new_from_icon_name(icon_name)
+        icon.set_pixel_size(19)
+        icon.add_css_class("settings-icon")
+        leading.append(icon)
         title = Gtk.Label(label=label)
         title.add_css_class("settings-label")
         title.set_xalign(0)
-        title.set_size_request(138, -1)
-        row.append(title)
+        leading.append(title)
+        row.append(leading)
         return row
 
-    def build_preference_slider(self, label, key, low, high, step):
-        row = self.make_setting_row(label)
+    def build_preference_slider(self, icon, label, key, low, high, step):
+        row = self.make_setting_row(icon, label)
         scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, low, high, step)
         scale.set_draw_value(False)
         scale.set_hexpand(True)
@@ -755,7 +787,7 @@ class ShengOsk(Gtk.Application):
         return row
 
     def build_accent_picker(self):
-        row = self.make_setting_row("强调色")
+        row = self.make_setting_row("color-select-symbolic", "配色")
         swatches = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=9)
         for key, (label, _color, _on_color) in ACCENT_PALETTES.items():
             button = Gtk.Button()
@@ -824,7 +856,15 @@ class ShengOsk(Gtk.Application):
                 "settings" if active else "keyboard"
             )
         if self.settings_button is not None:
-            self.settings_button.set_label("键盘" if active else "设置")
+            self.set_control_icon(
+                self.settings_button,
+                (
+                    "input-keyboard-symbolic"
+                    if active
+                    else "preferences-system-symbolic"
+                ),
+                "返回键盘" if active else "外观设置",
+            )
             if active:
                 self.settings_button.add_css_class("active-key")
             else:
@@ -840,7 +880,9 @@ class ShengOsk(Gtk.Application):
         bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
         bar.add_css_class("candidate-bar")
 
-        self.previous_button = self.make_control_button("‹", "上一页候选词")
+        self.previous_button = self.make_icon_control_button(
+            "go-previous-symbolic", "上一页"
+        )
         self.previous_button.connect(
             "clicked", lambda _button: self.backend_call("PrevPage")
         )
@@ -861,7 +903,7 @@ class ShengOsk(Gtk.Application):
         scroll.set_child(self.candidate_box)
         bar.append(scroll)
 
-        self.next_button = self.make_control_button("›", "下一页候选词")
+        self.next_button = self.make_icon_control_button("go-next-symbolic", "下一页")
         self.next_button.connect(
             "clicked", lambda _button: self.backend_call("NextPage")
         )
@@ -875,6 +917,22 @@ class ShengOsk(Gtk.Application):
         button.set_tooltip_text(tooltip)
         return button
 
+    def make_icon_control_button(self, icon_name, tooltip):
+        button = Gtk.Button()
+        button.add_css_class("flat-control")
+        self.set_control_icon(button, icon_name, tooltip)
+        return button
+
+    def set_control_icon(self, button, icon_name, tooltip=None):
+        image = button.get_child()
+        if not isinstance(image, Gtk.Image):
+            image = Gtk.Image()
+            image.set_pixel_size(20)
+            button.set_child(image)
+        image.set_from_icon_name(icon_name)
+        if tooltip is not None:
+            button.set_tooltip_text(tooltip)
+
     def make_key(self, label, action, special=False, expand=True):
         button = Gtk.Button(label=label)
         button.add_css_class("key")
@@ -884,6 +942,72 @@ class ShengOsk(Gtk.Application):
         button.set_vexpand(True)
         button.connect("clicked", lambda _button: action())
         return button
+
+    def make_space_key(self):
+        button = Gtk.Button()
+        button.add_css_class("key")
+        button.add_css_class("space-key")
+        button.set_hexpand(True)
+        button.set_vexpand(True)
+        button.set_tooltip_text("左右滑动移动光标")
+
+        content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        content.set_halign(Gtk.Align.CENTER)
+        left = Gtk.Image.new_from_icon_name("pan-start-symbolic")
+        left.add_css_class("space-hint")
+        label = Gtk.Label(label="空格")
+        right = Gtk.Image.new_from_icon_name("pan-end-symbolic")
+        right.add_css_class("space-hint")
+        content.append(left)
+        content.append(label)
+        content.append(right)
+        button.set_child(content)
+
+        drag = Gtk.GestureDrag()
+        drag.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+        drag.connect("drag-begin", self.on_space_drag_begin)
+        drag.connect("drag-update", self.on_space_drag_update)
+        drag.connect("drag-end", self.on_space_drag_end)
+        button.add_controller(drag)
+        button.connect("clicked", self.on_space_clicked)
+        return button
+
+    def on_space_clicked(self, _button):
+        if not self.space_dragged:
+            self.send_named_key("space")
+
+    def on_space_drag_begin(self, _gesture, _x, _y):
+        self.space_dragged = False
+        self.space_drag_steps = 0
+
+    def on_space_drag_update(self, gesture, offset_x, offset_y):
+        if abs(offset_x) < 16 or abs(offset_x) <= abs(offset_y):
+            return
+        if not self.space_dragged:
+            self.space_dragged = True
+            if self.space_button is not None:
+                self.space_button.add_css_class("dragging")
+        gesture.set_state(Gtk.EventSequenceState.CLAIMED)
+
+        target_steps = int(offset_x / 28)
+        delta = target_steps - self.space_drag_steps
+        if delta == 0:
+            return
+        key = "Right" if delta > 0 else "Left"
+        for _index in range(min(abs(delta), 12)):
+            self.send_named_key(key)
+        self.space_drag_steps = target_steps
+
+    def on_space_drag_end(self, _gesture, _offset_x, _offset_y):
+        if self.space_button is not None:
+            self.space_button.remove_css_class("dragging")
+        if self.space_dragged:
+            GLib.timeout_add(180, self.reset_space_drag)
+
+    def reset_space_drag(self):
+        self.space_dragged = False
+        self.space_drag_steps = 0
+        return GLib.SOURCE_REMOVE
 
     def make_key_row(self, items, side_padding=0):
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=7)
@@ -959,7 +1083,7 @@ class ShengOsk(Gtk.Application):
         )
         self.language_button.set_size_request(82, -1)
         self.update_input_method_labels()
-        space = self.make_key("空格", lambda: self.send_named_key("space"))
+        self.space_button = self.make_space_key()
         period = self.make_key(".", lambda: self.send_character("."), expand=False)
         period.set_size_request(68, -1)
         enter = self.make_key(
@@ -972,7 +1096,7 @@ class ShengOsk(Gtk.Application):
                 self.layer_button,
                 comma,
                 self.language_button,
-                space,
+                self.space_button,
                 period,
                 enter,
             ]
@@ -1406,7 +1530,11 @@ class ShengOsk(Gtk.Application):
         for edge in self.resize_edges:
             edge.set_visible(active)
         if self.adjust_button is not None:
-            self.adjust_button.set_label("完成" if active else "调整")
+            self.set_control_icon(
+                self.adjust_button,
+                "object-select-symbolic" if active else "transform-scale-symbolic",
+                "完成调整" if active else "调整位置和大小",
+            )
             if active:
                 self.adjust_button.add_css_class("active-key")
             else:
