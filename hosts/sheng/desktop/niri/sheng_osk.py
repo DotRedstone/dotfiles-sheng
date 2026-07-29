@@ -45,18 +45,48 @@ DEFAULT_HEIGHT = 450
 EDGE_MARGIN = 18
 
 
-CSS = b"""
+DEFAULT_PREFERENCES = {
+    "shell_radius": 8,
+    "key_radius": 6,
+    "opacity": 0.98,
+    "key_height": 54,
+    "font_size": 19,
+    "shell_padding": 10,
+    "handle_opacity": 0.72,
+    "shadow": True,
+    "accent": "noctalia",
+}
+
+ACCENT_PALETTES = {
+    "noctalia": ("Noctalia", "#f3df91", "#211f2a"),
+    "lavender": ("薰衣草", "#c8b8ff", "#211d2e"),
+    "sky": ("晴空", "#a8d8ff", "#17212b"),
+    "mint": ("薄荷", "#9eddb3", "#17231b"),
+    "rose": ("蔷薇", "#f1b5c8", "#2b1b20"),
+}
+
+PREFERENCE_LIMITS = {
+    "shell_radius": (0, 24),
+    "key_radius": (0, 18),
+    "opacity": (0.82, 1.0),
+    "key_height": (46, 68),
+    "font_size": (16, 23),
+    "shell_padding": (6, 16),
+    "handle_opacity": (0.25, 1.0),
+}
+
+CSS_TEMPLATE = """
 window.sheng-osk {
   background: transparent;
   color: #f4f2ff;
 }
 
 .keyboard-shell {
-  background: rgba(9, 9, 34, 0.98);
+  background: rgba(9, 9, 34, @SHELL_OPACITY@);
   border: 1px solid #45436f;
-  border-radius: 8px;
-  box-shadow: 0 14px 38px rgba(0, 0, 12, 0.52);
-  padding: 10px;
+  border-radius: @SHELL_RADIUS@px;
+  box-shadow: @SHADOW@;
+  padding: @SHELL_PADDING@px;
 }
 
 .drag-handle {
@@ -79,19 +109,19 @@ window.sheng-osk {
   min-height: 48px;
   background: #11112f;
   border: 1px solid #36345c;
-  border-radius: 6px;
+  border-radius: @INNER_RADIUS@px;
   padding: 3px 5px;
 }
 
 .preedit {
-  color: #f5df8e;
+  color: @ACCENT@;
   font-size: 17px;
   font-weight: 600;
   padding: 0 8px;
 }
 
 button {
-  border-radius: 6px;
+  border-radius: @KEY_RADIUS@px;
   border: 1px solid #45436c;
   background: #1a193c;
   color: #f5f3ff;
@@ -108,8 +138,8 @@ button:active {
 }
 
 button.key {
-  min-height: 54px;
-  font-size: 19px;
+  min-height: @KEY_HEIGHT@px;
+  font-size: @FONT_SIZE@px;
   font-weight: 500;
 }
 
@@ -119,9 +149,9 @@ button.special-key {
 }
 
 button.active-key {
-  background: #f3df91;
-  border-color: #fff0b0;
-  color: #211f2a;
+  background: @ACCENT@;
+  border-color: @ACCENT@;
+  color: @ON_ACCENT@;
 }
 
 button.candidate {
@@ -134,9 +164,9 @@ button.candidate {
 }
 
 button.candidate:selected, button.candidate.current {
-  background: #f3df91;
-  border-color: #fff0b0;
-  color: #211f2a;
+  background: @ACCENT@;
+  border-color: @ACCENT@;
+  color: @ON_ACCENT@;
 }
 
 button.flat-control {
@@ -159,7 +189,7 @@ button.flat-control {
 }
 
 .resize-indicator {
-  background: rgba(243, 223, 145, 0.72);
+  background: @ACCENT_RGBA@;
   border-radius: 999px;
 }
 
@@ -179,27 +209,94 @@ button.flat-control {
 }
 
 .resize-edge.top-left {
-  border-top: 3px solid #f3df91;
-  border-left: 3px solid #f3df91;
-  border-radius: 7px 0 0 0;
+  border-top: 3px solid @ACCENT@;
+  border-left: 3px solid @ACCENT@;
+  border-radius: @SHELL_RADIUS@px 0 0 0;
 }
 
 .resize-edge.top-right {
-  border-top: 3px solid #f3df91;
-  border-right: 3px solid #f3df91;
-  border-radius: 0 7px 0 0;
+  border-top: 3px solid @ACCENT@;
+  border-right: 3px solid @ACCENT@;
+  border-radius: 0 @SHELL_RADIUS@px 0 0;
 }
 
 .resize-edge.bottom-left {
-  border-bottom: 3px solid #f3df91;
-  border-left: 3px solid #f3df91;
-  border-radius: 0 0 0 7px;
+  border-bottom: 3px solid @ACCENT@;
+  border-left: 3px solid @ACCENT@;
+  border-radius: 0 0 0 @SHELL_RADIUS@px;
 }
 
 .resize-edge.bottom-right {
-  border-right: 3px solid #f3df91;
-  border-bottom: 3px solid #f3df91;
-  border-radius: 0 0 7px 0;
+  border-right: 3px solid @ACCENT@;
+  border-bottom: 3px solid @ACCENT@;
+  border-radius: 0 0 @SHELL_RADIUS@px 0;
+}
+
+.settings-panel {
+  background: transparent;
+  padding: 12px;
+}
+
+.settings-title {
+  color: #f5f3ff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.settings-label {
+  color: #d9d5e8;
+  font-size: 15px;
+}
+
+.settings-value {
+  color: #a9a5c1;
+  min-width: 58px;
+}
+
+scale trough {
+  min-height: 7px;
+  border-radius: 999px;
+  background: #292750;
+}
+
+scale highlight {
+  border-radius: 999px;
+  background: @ACCENT@;
+}
+
+scale slider {
+  min-width: 22px;
+  min-height: 22px;
+  border-radius: 999px;
+  background: @ACCENT@;
+  border: 2px solid @ON_ACCENT@;
+}
+
+switch:checked {
+  background: @ACCENT@;
+  color: @ON_ACCENT@;
+}
+
+button.color-swatch {
+  min-width: 44px;
+  min-height: 34px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+}
+
+button.color-swatch.selected {
+  border-color: #f5f3ff;
+}
+
+button.accent-noctalia { background: #f3df91; }
+button.accent-lavender { background: #c8b8ff; }
+button.accent-sky { background: #a8d8ff; }
+button.accent-mint { background: #9eddb3; }
+button.accent-rose { background: #f1b5c8; }
+
+button.settings-command {
+  min-height: 38px;
+  padding: 0 14px;
 }
 """
 
@@ -225,6 +322,12 @@ MORE_SYMBOL_ROWS = [
 
 def clamp(value, low, high):
     return max(low, min(value, high))
+
+
+def color_rgba(color, opacity):
+    value = color.removeprefix("#")
+    red, green, blue = (int(value[index : index + 2], 16) for index in (0, 2, 4))
+    return f"rgba({red}, {green}, {blue}, {opacity:.2f})"
 
 
 class FcitxVirtualKeyboard(ServiceInterface):
@@ -290,6 +393,13 @@ class ShengOsk(Gtk.Application):
         self.window = None
         self.shell = None
         self.bus = None
+        self.css_provider = None
+        self.content_stack = None
+        self.settings_button = None
+        self.settings_open = False
+        self.preference_save_source = 0
+        self.preference_controls = {}
+        self.accent_buttons = {}
         self.preedit_label = None
         self.candidate_box = None
         self.previous_button = None
@@ -312,6 +422,7 @@ class ShengOsk(Gtk.Application):
         self.has_previous = False
         self.has_next = False
         self.page = -1
+        self.preferences = self.load_preferences()
         self.geometry = self.load_geometry()
         self.drag_origin = (0, 0)
         self.resize_origin = None
@@ -332,6 +443,77 @@ class ShengOsk(Gtk.Application):
             "XDG_STATE_HOME", str(Path.home() / ".local" / "state")
         )
         return Path(state_home) / "sheng-osk" / "geometry.json"
+
+    @property
+    def preferences_path(self):
+        config_home = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
+        return Path(config_home) / "sheng-osk" / "settings.json"
+
+    def load_preferences(self):
+        preferences = dict(DEFAULT_PREFERENCES)
+        try:
+            stored = json.loads(self.preferences_path.read_text(encoding="utf-8"))
+            if isinstance(stored, dict):
+                preferences.update(stored)
+        except (FileNotFoundError, OSError, ValueError, TypeError):
+            pass
+
+        for key, (low, high) in PREFERENCE_LIMITS.items():
+            value = preferences.get(key, DEFAULT_PREFERENCES[key])
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                value = DEFAULT_PREFERENCES[key]
+            preferences[key] = clamp(value, low, high)
+        preferences["shadow"] = bool(preferences.get("shadow", True))
+        if preferences.get("accent") not in ACCENT_PALETTES:
+            preferences["accent"] = DEFAULT_PREFERENCES["accent"]
+        return preferences
+
+    def render_css(self):
+        _name, accent, on_accent = ACCENT_PALETTES[self.preferences["accent"]]
+        replacements = {
+            "@SHELL_OPACITY@": f"{self.preferences['opacity']:.2f}",
+            "@SHELL_RADIUS@": str(round(self.preferences["shell_radius"])),
+            "@INNER_RADIUS@": str(max(0, round(self.preferences["shell_radius"]) - 2)),
+            "@SHELL_PADDING@": str(round(self.preferences["shell_padding"])),
+            "@KEY_RADIUS@": str(round(self.preferences["key_radius"])),
+            "@KEY_HEIGHT@": str(round(self.preferences["key_height"])),
+            "@FONT_SIZE@": str(round(self.preferences["font_size"])),
+            "@SHADOW@": (
+                "0 14px 38px rgba(0, 0, 12, 0.52)"
+                if self.preferences["shadow"]
+                else "none"
+            ),
+            "@ACCENT@": accent,
+            "@ON_ACCENT@": on_accent,
+            "@ACCENT_RGBA@": color_rgba(accent, self.preferences["handle_opacity"]),
+        }
+        css = CSS_TEMPLATE
+        for token, value in replacements.items():
+            css = css.replace(token, value)
+        return css.encode()
+
+    def apply_preferences(self):
+        if self.css_provider is not None:
+            self.css_provider.load_from_data(self.render_css())
+
+    def schedule_preferences_save(self):
+        if self.preference_save_source:
+            GLib.source_remove(self.preference_save_source)
+        self.preference_save_source = GLib.timeout_add(250, self.save_preferences)
+
+    def save_preferences(self):
+        self.preference_save_source = 0
+        try:
+            self.preferences_path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = self.preferences_path.with_suffix(".tmp")
+            temporary.write_text(
+                json.dumps(self.preferences, ensure_ascii=True, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            temporary.replace(self.preferences_path)
+        except OSError:
+            pass
+        return GLib.SOURCE_REMOVE
 
     def load_geometry(self):
         geometry = {
@@ -389,11 +571,11 @@ class ShengOsk(Gtk.Application):
         display = Gdk.Display.get_default()
         if display is None:
             raise RuntimeError("no Wayland display is available")
-        provider = Gtk.CssProvider()
-        provider.load_from_data(CSS)
+        self.css_provider = Gtk.CssProvider()
+        self.css_provider.load_from_data(self.render_css())
         Gtk.StyleContext.add_provider_for_display(
             display,
-            provider,
+            self.css_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
         )
 
@@ -421,12 +603,22 @@ class ShengOsk(Gtk.Application):
         overlay.set_child(self.shell)
 
         self.shell.append(self.build_header())
-        self.shell.append(self.build_candidate_bar())
 
+        keyboard_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
+        keyboard_page.append(self.build_candidate_bar())
         self.key_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=7)
         self.key_area.set_vexpand(True)
-        self.shell.append(self.key_area)
+        keyboard_page.append(self.key_area)
         self.rebuild_keys()
+
+        self.content_stack = Gtk.Stack()
+        self.content_stack.set_vexpand(True)
+        self.content_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+        self.content_stack.set_transition_duration(140)
+        self.content_stack.add_named(keyboard_page, "keyboard")
+        self.content_stack.add_named(self.build_settings_panel(), "settings")
+        self.content_stack.set_visible_child_name("keyboard")
+        self.shell.append(self.content_stack)
 
         self.build_resize_edges(overlay)
 
@@ -459,6 +651,10 @@ class ShengOsk(Gtk.Application):
         self.input_method_label.add_css_class("im-label")
         header.append(self.input_method_label)
 
+        self.settings_button = self.make_control_button("设置", "个性化设置")
+        self.settings_button.connect("clicked", self.toggle_settings)
+        header.append(self.settings_button)
+
         self.adjust_button = self.make_control_button("调整", "调整位置和大小")
         self.adjust_button.connect("clicked", self.toggle_adjust_mode)
         header.append(self.adjust_button)
@@ -477,6 +673,162 @@ class ShengOsk(Gtk.Application):
         )
         header.append(close)
         return header
+
+    def build_settings_panel(self):
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.set_vexpand(True)
+
+        panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        panel.add_css_class("settings-panel")
+        panel.set_margin_start(8)
+        panel.set_margin_end(8)
+
+        title = Gtk.Label(label="外观")
+        title.add_css_class("settings-title")
+        title.set_xalign(0)
+        panel.append(title)
+
+        controls = [
+            ("键盘圆角", "shell_radius", 0, 24, 1),
+            ("按键圆角", "key_radius", 0, 18, 1),
+            ("背景透明度", "opacity", 0.82, 1.0, 0.01),
+            ("按键高度", "key_height", 46, 68, 1),
+            ("按键字号", "font_size", 16, 23, 1),
+            ("键盘内边距", "shell_padding", 6, 16, 1),
+            ("调整提示强度", "handle_opacity", 0.25, 1.0, 0.05),
+        ]
+        for label, key, low, high, step in controls:
+            panel.append(self.build_preference_slider(label, key, low, high, step))
+
+        panel.append(Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL))
+        panel.append(self.build_accent_picker())
+
+        shadow_row = self.make_setting_row("窗口阴影")
+        shadow_switch = Gtk.Switch()
+        shadow_switch.set_active(self.preferences["shadow"])
+        shadow_switch.set_valign(Gtk.Align.CENTER)
+        shadow_switch.connect("notify::active", self.on_shadow_changed)
+        shadow_row.append(shadow_switch)
+        self.preference_controls["shadow"] = shadow_switch
+        panel.append(shadow_row)
+
+        footer = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        footer.set_halign(Gtk.Align.END)
+        reset = Gtk.Button(label="恢复外观默认")
+        reset.add_css_class("settings-command")
+        reset.connect("clicked", self.on_reset_preferences)
+        footer.append(reset)
+        panel.append(footer)
+
+        scroll.set_child(panel)
+        return scroll
+
+    def make_setting_row(self, label):
+        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        title = Gtk.Label(label=label)
+        title.add_css_class("settings-label")
+        title.set_xalign(0)
+        title.set_size_request(138, -1)
+        row.append(title)
+        return row
+
+    def build_preference_slider(self, label, key, low, high, step):
+        row = self.make_setting_row(label)
+        scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, low, high, step)
+        scale.set_draw_value(False)
+        scale.set_hexpand(True)
+        scale.set_value(self.preferences[key])
+        value = Gtk.Label(label=self.format_preference(key))
+        value.add_css_class("settings-value")
+        value.set_xalign(1)
+        scale.connect("value-changed", self.on_preference_changed, key, value)
+        row.append(scale)
+        row.append(value)
+        self.preference_controls[key] = scale
+        return row
+
+    def build_accent_picker(self):
+        row = self.make_setting_row("强调色")
+        swatches = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=9)
+        for key, (label, _color, _on_color) in ACCENT_PALETTES.items():
+            button = Gtk.Button()
+            button.add_css_class("color-swatch")
+            button.add_css_class(f"accent-{key}")
+            button.set_tooltip_text(label)
+            button.connect("clicked", self.on_accent_selected, key)
+            swatches.append(button)
+            self.accent_buttons[key] = button
+        row.append(swatches)
+        self.update_accent_buttons()
+        return row
+
+    def format_preference(self, key):
+        value = self.preferences[key]
+        if key in ("opacity", "handle_opacity"):
+            return f"{round(value * 100)}%"
+        return f"{round(value)} px"
+
+    def on_preference_changed(self, scale, key, value_label):
+        value = scale.get_value()
+        if key not in ("opacity", "handle_opacity"):
+            value = round(value)
+        self.preferences[key] = value
+        value_label.set_label(self.format_preference(key))
+        self.apply_preferences()
+        self.schedule_preferences_save()
+
+    def on_shadow_changed(self, switch, _parameter):
+        self.preferences["shadow"] = switch.get_active()
+        self.apply_preferences()
+        self.schedule_preferences_save()
+
+    def on_accent_selected(self, _button, key):
+        self.preferences["accent"] = key
+        self.update_accent_buttons()
+        self.apply_preferences()
+        self.schedule_preferences_save()
+
+    def update_accent_buttons(self):
+        selected = self.preferences["accent"]
+        for key, button in self.accent_buttons.items():
+            if key == selected:
+                button.add_css_class("selected")
+            else:
+                button.remove_css_class("selected")
+
+    def on_reset_preferences(self, _button):
+        self.preferences = dict(DEFAULT_PREFERENCES)
+        for key, control in self.preference_controls.items():
+            if key == "shadow":
+                control.set_active(self.preferences[key])
+            else:
+                control.set_value(self.preferences[key])
+        self.update_accent_buttons()
+        self.apply_preferences()
+        self.save_preferences()
+
+    def toggle_settings(self, _button):
+        self.set_settings_open(not self.settings_open)
+
+    def set_settings_open(self, active):
+        self.settings_open = active
+        if self.content_stack is not None:
+            self.content_stack.set_visible_child_name(
+                "settings" if active else "keyboard"
+            )
+        if self.settings_button is not None:
+            self.settings_button.set_label("键盘" if active else "设置")
+            if active:
+                self.settings_button.add_css_class("active-key")
+            else:
+                self.settings_button.remove_css_class("active-key")
+        if self.adjust_button is not None:
+            self.adjust_button.set_sensitive(not active)
+        if active:
+            self.set_adjust_mode(False)
+        if self.drag_hint is not None:
+            self.drag_hint.set_label("个性化设置" if active else "拖动移动")
 
     def build_candidate_bar(self):
         bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
@@ -908,6 +1260,7 @@ class ShengOsk(Gtk.Application):
         return GLib.SOURCE_REMOVE
 
     def hide_keyboard(self, _reason=""):
+        self.set_settings_open(False)
         self.set_adjust_mode(False)
         if self.window is not None:
             self.window.set_visible(False)
@@ -1041,6 +1394,8 @@ class ShengOsk(Gtk.Application):
         self.set_adjust_mode(not self.adjusting)
 
     def set_adjust_mode(self, active):
+        if active and self.settings_open:
+            self.set_settings_open(False)
         self.adjusting = active
         for edge in self.resize_edges:
             edge.set_visible(active)
