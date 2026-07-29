@@ -220,16 +220,16 @@ let
     exec ${pkgs.lisgd}/bin/lisgd \
       -d /dev/input/touchscreen \
       -m 1000 \
-      -r 20 \
-      -t 220 \
+      -r 30 \
+      -t 200 \
       -g "1,LR,L,*,R,$action back" \
       -g "1,RL,R,*,R,$action back" \
+      -g "1,UD,T,*,R,$action close" \
+      -g "1,DU,B,*,R,$action fullscreen" \
       -g "2,LR,L,*,R,$action back" \
       -g "2,RL,R,*,R,$action back" \
-      -g "1,DU,T,*,R,$action close" \
-      -g "2,DU,T,*,R,$action close" \
-      -g "1,UD,B,*,R,$action fullscreen" \
-      -g "2,UD,B,*,R,$action fullscreen" \
+      -g "2,UD,T,*,R,$action close" \
+      -g "2,DU,B,*,R,$action fullscreen" \
       -g "3,RL,*,*,R,$action column-right" \
       -g "3,LR,*,*,R,$action column-left" \
       -g "3,DU,*,*,R,$action workspace-down" \
