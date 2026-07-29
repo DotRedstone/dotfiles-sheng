@@ -704,6 +704,7 @@ in
     partOf = [ "niri.service" ];
     after = [ "niri.service" ];
     before = [ "fcitx5-daemon.service" ];
+    environment.GSK_RENDERER = "cairo";
     serviceConfig = {
       ExecStart = "${niriOsk}/bin/sheng-niri-osk";
       Restart = "on-failure";
