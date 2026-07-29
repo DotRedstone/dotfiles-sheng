@@ -158,20 +158,19 @@ button.flat-control {
   min-width: 24px;
 }
 
-.resize-edge.top {
-  border-top: 2px solid rgba(243, 223, 145, 0.78);
+.resize-indicator {
+  background: rgba(243, 223, 145, 0.72);
+  border-radius: 999px;
 }
 
-.resize-edge.bottom {
-  border-bottom: 2px solid rgba(243, 223, 145, 0.78);
+.resize-indicator.horizontal {
+  min-width: 82px;
+  min-height: 3px;
 }
 
-.resize-edge.left {
-  border-left: 2px solid rgba(243, 223, 145, 0.78);
-}
-
-.resize-edge.right {
-  border-right: 2px solid rgba(243, 223, 145, 0.78);
+.resize-indicator.vertical {
+  min-width: 3px;
+  min-height: 82px;
 }
 
 .resize-edge.corner {
@@ -634,7 +633,7 @@ class ShengOsk(Gtk.Application):
             ("bottom-right", Gtk.Align.END, Gtk.Align.END, "corner"),
         ]
         for direction, horizontal, vertical, style in edge_specs:
-            edge = Gtk.Box()
+            edge = Gtk.Overlay()
             edge.add_css_class("resize-edge")
             edge.add_css_class(style)
             edge.add_css_class(direction)
@@ -643,6 +642,21 @@ class ShengOsk(Gtk.Application):
             edge.set_hexpand(horizontal == Gtk.Align.FILL)
             edge.set_vexpand(vertical == Gtk.Align.FILL)
             edge.set_visible(False)
+            if style != "corner":
+                indicator = Gtk.Box()
+                indicator.add_css_class("resize-indicator")
+                indicator.add_css_class(style)
+                if style == "horizontal":
+                    indicator.set_halign(Gtk.Align.CENTER)
+                    indicator.set_valign(
+                        Gtk.Align.START if direction == "top" else Gtk.Align.END
+                    )
+                else:
+                    indicator.set_halign(
+                        Gtk.Align.START if direction == "left" else Gtk.Align.END
+                    )
+                    indicator.set_valign(Gtk.Align.CENTER)
+                edge.set_child(indicator)
             drag = Gtk.GestureDrag()
             drag.connect(
                 "drag-begin",
