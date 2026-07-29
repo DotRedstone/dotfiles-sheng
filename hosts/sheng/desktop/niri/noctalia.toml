@@ -57,7 +57,7 @@ capsule_opacity = 0.86
 capsule_padding = 9
 capsule_radius = 9
 center = [ "clock" ]
-end = [ "back_control", "fullscreen_control", "close_window_control", "keyboard_control", "network", "volume", "brightness", "battery", "control-center", "session" ]
+end = [ "touch_control", "keyboard_control", "network", "volume", "brightness", "battery", "control-center", "session" ]
 margin_edge = 8
 margin_ends = 10
 padding = 11
@@ -73,14 +73,8 @@ widget_spacing = 7
 [widget.clock]
 format = "{:%H:%M}"
 
-[widget.back_control]
-type = "dotredstone/touch-controls:back"
-
-[widget.fullscreen_control]
-type = "dotredstone/touch-controls:fullscreen"
-
-[widget.close_window_control]
-type = "dotredstone/touch-controls:close-window"
+[widget.touch_control]
+type = "dotredstone/touch-controls:controls"
 
 [widget.keyboard_control]
 type = "dotredstone/touch-controls:keyboard-toggle"

@@ -221,8 +221,11 @@ let
       upper-[a-z])
         action="key shift+''${token#upper-}"
         ;;
-      backspace|enter|tab|space|left|right|up|down|delete)
+      backspace|enter|tab|space|left|right|up|down|delete|escape)
         action="key $token"
+        ;;
+      app-back)
+        action="key alt+left"
         ;;
       language)
         action="key ctrl+space"
@@ -303,12 +306,6 @@ let
         ;;
     esac
 
-    notify_toast() {
-      title="$1"
-      icon="$2"
-      ${lib.getExe config.programs.noctalia.package} msg toast send "{\"title\":\"$title\", \"icon\":\"$icon\", \"duration\":1000}" 2>/dev/null || true
-    }
-
     runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
     socket="''${NIRI_SOCKET:-}"
     if [ -z "$socket" ]; then
@@ -324,45 +321,65 @@ let
     fi
 
     case "$1" in
-      back|close)
-        notify_toast "◀ 返回 / 关闭" "chevron-left" &
+      back)
+        overview_state="$(
+          NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg --json overview-state 2>/dev/null ||
+            printf '{"is_open":false}'
+        )"
+        if printf '%s' "$overview_state" |
+          ${pkgs.jq}/bin/jq -e '.is_open == true' >/dev/null 2>&1; then
+          action="close-overview"
+        else
+          focused_window="$(
+            NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg --json focused-window 2>/dev/null ||
+              printf 'null'
+          )"
+          if printf '%s' "$focused_window" |
+            ${pkgs.jq}/bin/jq -e '.is_fullscreen == true' >/dev/null 2>&1; then
+            action="fullscreen-window"
+          else
+            exec ${niriKey}/bin/sheng-niri-key app-back
+          fi
+        fi
+        ;;
+      close)
         action="close-window"
         ;;
       home)
-        notify_toast "⚪ 回到主页" "home" &
-        action="focus-workspace-down"
+        action="focus-workspace"
+        action_arg="1"
         ;;
-      recents|overview)
-        notify_toast "⏹ 最近任务" "layout-grid" &
+      recents)
+        action="open-overview"
+        ;;
+      overview)
         action="toggle-overview"
         ;;
       column-left)
-        notify_toast "← 焦点左移" "chevron-left" &
-        action="focus-column-left"
+        action="focus-column-left-or-last"
         ;;
       column-right)
-        notify_toast "→ 焦点右移" "chevron-right" &
-        action="focus-column-right"
+        action="focus-column-right-or-first"
         ;;
       workspace-up)
-        notify_toast "▲ 上移工作区" "chevron-up" &
         action="focus-workspace-up"
         ;;
       workspace-down)
-        notify_toast "▼ 下移工作区" "chevron-down" &
         action="focus-workspace-down"
         ;;
       fullscreen)
-        notify_toast "⛶ 切换全屏" "maximize" &
         action="fullscreen-window"
         ;;
       maximize)
-        notify_toast "🗖 最大化列" "arrows-maximize" &
         action="maximize-column"
         ;;
     esac
 
-    NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg action "$action"
+    if [ -n "''${action_arg:-}" ]; then
+      NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg action "$action" "$action_arg"
+    else
+      NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg action "$action"
+    fi
   '';
 
   niriTouchGestures = pkgs.writeShellScriptBin "sheng-niri-touch-gestures" ''
@@ -373,22 +390,17 @@ let
 
     exec ${pkgs.lisgd}/bin/lisgd \
       -d /dev/input/touchscreen \
-      -m 1000 \
-      -r 30 \
-      -t 200 \
+      -m 1200 \
+      -r 25 \
+      -s 2 \
+      -t 160 \
       -g "1,LR,L,*,R,$action back" \
       -g "1,RL,R,*,R,$action back" \
-      -g "1,UD,T,*,R,$action close" \
-      -g "1,DU,B,*,R,$action fullscreen" \
-      -g "2,LR,L,*,R,$action back" \
-      -g "2,RL,R,*,R,$action back" \
-      -g "2,UD,T,*,R,$action close" \
-      -g "2,DU,B,*,R,$action fullscreen" \
-      -g "3,RL,*,*,R,$action column-right" \
-      -g "3,LR,*,*,R,$action column-left" \
-      -g "3,DU,*,*,R,$action workspace-down" \
-      -g "3,UD,*,*,R,$action workspace-up" \
-      -g "4,DU,*,*,R,$action overview"
+      -g "1,DU,B,M,R,$action recents" \
+      -g "1,DU,B,S,R,$action home" \
+      -g "1,RL,B,*,R,$action column-right" \
+      -g "1,LR,B,*,R,$action column-left" \
+      -g "1,UD,T,*,R,$action control-center"
   '';
 
   displayControls = pkgs.writeScript "sheng-niri-display-controls" ''
