@@ -48,20 +48,20 @@ EDGE_MARGIN = 18
 CSS = b"""
 window.sheng-osk {
   background: transparent;
-  color: #edf2f5;
+  color: #f4f2ff;
 }
 
 .keyboard-shell {
-  background: rgba(20, 26, 32, 0.98);
-  border: 1px solid #46535e;
+  background: rgba(9, 9, 34, 0.98);
+  border: 1px solid #45436f;
   border-radius: 8px;
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 14px 38px rgba(0, 0, 12, 0.52);
   padding: 10px;
 }
 
 .drag-handle {
   min-height: 38px;
-  color: #b6c1ca;
+  color: #cbc7dc;
   padding: 0 8px;
 }
 
@@ -71,20 +71,20 @@ window.sheng-osk {
 }
 
 .drag-hint, .im-label {
-  color: #93a2ae;
+  color: #a9a5c1;
   font-size: 13px;
 }
 
 .candidate-bar {
   min-height: 48px;
-  background: #1a222a;
-  border: 1px solid #34414c;
+  background: #11112f;
+  border: 1px solid #36345c;
   border-radius: 6px;
   padding: 3px 5px;
 }
 
 .preedit {
-  color: #66d9e8;
+  color: #f5df8e;
   font-size: 17px;
   font-weight: 600;
   padding: 0 8px;
@@ -92,19 +92,19 @@ window.sheng-osk {
 
 button {
   border-radius: 6px;
-  border: 1px solid #465562;
-  background: #27323c;
-  color: #f3f6f8;
+  border: 1px solid #45436c;
+  background: #1a193c;
+  color: #f5f3ff;
   box-shadow: none;
 }
 
 button:hover, button:focus {
-  background: #33414d;
-  border-color: #60717f;
+  background: #292750;
+  border-color: #6d6999;
 }
 
 button:active {
-  background: #3d4d59;
+  background: #353160;
 }
 
 button.key {
@@ -114,13 +114,14 @@ button.key {
 }
 
 button.special-key {
-  background: #202a33;
-  color: #d5dee5;
+  background: #141431;
+  color: #d9d5e8;
 }
 
 button.active-key {
-  background: #286b77;
-  border-color: #4dc5dc;
+  background: #f3df91;
+  border-color: #fff0b0;
+  color: #211f2a;
 }
 
 button.candidate {
@@ -133,8 +134,9 @@ button.candidate {
 }
 
 button.candidate:selected, button.candidate.current {
-  background: #285761;
-  border-color: #4dc5dc;
+  background: #f3df91;
+  border-color: #fff0b0;
+  color: #211f2a;
 }
 
 button.flat-control {
@@ -145,21 +147,60 @@ button.flat-control {
 }
 
 .resize-edge {
-  background: rgba(77, 197, 220, 0.32);
+  background: transparent;
 }
 
 .resize-edge.horizontal {
-  min-height: 18px;
+  min-height: 24px;
 }
 
 .resize-edge.vertical {
-  min-width: 18px;
+  min-width: 24px;
+}
+
+.resize-edge.top {
+  border-top: 2px solid rgba(243, 223, 145, 0.78);
+}
+
+.resize-edge.bottom {
+  border-bottom: 2px solid rgba(243, 223, 145, 0.78);
+}
+
+.resize-edge.left {
+  border-left: 2px solid rgba(243, 223, 145, 0.78);
+}
+
+.resize-edge.right {
+  border-right: 2px solid rgba(243, 223, 145, 0.78);
 }
 
 .resize-edge.corner {
-  min-width: 32px;
-  min-height: 32px;
-  background: rgba(77, 197, 220, 0.62);
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.resize-edge.top-left {
+  border-top: 3px solid #f3df91;
+  border-left: 3px solid #f3df91;
+  border-radius: 7px 0 0 0;
+}
+
+.resize-edge.top-right {
+  border-top: 3px solid #f3df91;
+  border-right: 3px solid #f3df91;
+  border-radius: 0 7px 0 0;
+}
+
+.resize-edge.bottom-left {
+  border-bottom: 3px solid #f3df91;
+  border-left: 3px solid #f3df91;
+  border-radius: 0 0 0 7px;
+}
+
+.resize-edge.bottom-right {
+  border-right: 3px solid #f3df91;
+  border-bottom: 3px solid #f3df91;
+  border-radius: 0 0 7px 0;
 }
 """
 
@@ -596,6 +637,7 @@ class ShengOsk(Gtk.Application):
             edge = Gtk.Box()
             edge.add_css_class("resize-edge")
             edge.add_css_class(style)
+            edge.add_css_class(direction)
             edge.set_halign(horizontal)
             edge.set_valign(vertical)
             edge.set_hexpand(horizontal == Gtk.Align.FILL)
