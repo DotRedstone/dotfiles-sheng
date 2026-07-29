@@ -822,6 +822,7 @@ in
   systemd.user.services.sheng-niri-touch-gestures = {
     description = "Handle touchscreen gestures in the sheng Niri session";
     wantedBy = [ "niri.service" ];
+    wants = [ "sheng-niri-gesture-feedback.service" ];
     partOf = [ "niri.service" ];
     after = [
       "niri.service"
