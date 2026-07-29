@@ -12,6 +12,44 @@
 }:
 
 let
+  oskPython = pkgs.python3.withPackages (
+    pythonPackages: with pythonPackages; [
+      dbus-next
+      pygobject3
+    ]
+  );
+
+  niriOsk = pkgs.stdenvNoCC.mkDerivation {
+    pname = "sheng-niri-osk";
+    version = "1.0.0";
+    src = ./niri/sheng_osk.py;
+    dontUnpack = true;
+
+    nativeBuildInputs = [
+      pkgs.makeWrapper
+      pkgs.wrapGAppsHook4
+    ];
+    buildInputs = [
+      pkgs.gtk4
+      pkgs.gtk4-layer-shell
+    ];
+    dontWrapGApps = true;
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm644 "$src" "$out/libexec/sheng_osk.py"
+      mkdir -p "$out/bin"
+      runHook postInstall
+    '';
+
+    preFixup = ''
+      makeWrapper ${oskPython}/bin/python3 "$out/bin/sheng-niri-osk" \
+        --add-flags "$out/libexec/sheng_osk.py" \
+        --set LD_PRELOAD "${lib.getLib pkgs.gtk4-layer-shell}/lib/libgtk4-layer-shell.so" \
+        "''${gappsWrapperArgs[@]}"
+    '';
+  };
+
   regreetSession = pkgs.writeShellScript "sheng-regreet-session" ''
     set -eu
 
@@ -130,7 +168,15 @@ let
   '';
 
   niriOskToggle = pkgs.writeShellScriptBin "sheng-niri-osk-toggle" ''
-    set -eu
+    set -u
+
+    if ${pkgs.systemd}/bin/busctl --user call \
+      org.fcitx.Fcitx5 \
+      /virtualkeyboard \
+      org.fcitx.Fcitx.VirtualKeyboard1 \
+      ToggleVirtualKeyboard >/dev/null 2>&1; then
+      exit 0
+    fi
 
     exec ${lib.getExe config.programs.noctalia.package} \
       msg panel-toggle dotredstone/touch-controls:keyboard
@@ -565,6 +611,7 @@ in
     lisgd
     niriDisplay
     niriLock
+    niriOsk
     niriOskToggle
     niriKey
     niriTouchAction
@@ -624,12 +671,28 @@ in
     description = "Fcitx5 input method for the Niri session";
     wantedBy = [ "niri.service" ];
     partOf = [ "niri.service" ];
-    after = [ "niri.service" ];
+    after = [
+      "niri.service"
+      "sheng-niri-osk.service"
+    ];
     serviceConfig = {
       ExecStart = "${config.i18n.inputMethod.package}/bin/fcitx5 --replace";
       Restart = "on-failure";
       RestartSec = 2;
       UnsetEnvironment = "GTK_IM_MODULE";
+    };
+  };
+
+  systemd.user.services.sheng-niri-osk = {
+    description = "Touch-first Fcitx5 virtual keyboard for Niri";
+    wantedBy = [ "niri.service" ];
+    partOf = [ "niri.service" ];
+    after = [ "niri.service" ];
+    before = [ "fcitx5-daemon.service" ];
+    serviceConfig = {
+      ExecStart = "${niriOsk}/bin/sheng-niri-osk";
+      Restart = "on-failure";
+      RestartSec = 1;
     };
   };
 
