@@ -164,6 +164,12 @@ let
         ;;
     esac
 
+    notify_toast() {
+      title="$1"
+      icon="$2"
+      ${lib.getExe config.programs.noctalia.package} msg toast send "{\"title\":\"$title\", \"icon\":\"$icon\", \"duration\":1000}" 2>/dev/null || true
+    }
+
     runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
     socket="''${NIRI_SOCKET:-}"
     if [ -z "$socket" ]; then
@@ -180,30 +186,39 @@ let
 
     case "$1" in
       back|close)
+        notify_toast "◀ 返回 / 关闭" "chevron-left" &
         action="close-window"
         ;;
       home)
+        notify_toast "⚪ 回到主页" "home" &
         action="focus-workspace-down"
         ;;
       recents|overview)
+        notify_toast "⏹ 最近任务" "layout-grid" &
         action="toggle-overview"
         ;;
       column-left)
+        notify_toast "← 焦点左移" "chevron-left" &
         action="focus-column-left"
         ;;
       column-right)
+        notify_toast "→ 焦点右移" "chevron-right" &
         action="focus-column-right"
         ;;
       workspace-up)
+        notify_toast "▲ 上移工作区" "chevron-up" &
         action="focus-workspace-up"
         ;;
       workspace-down)
+        notify_toast "▼ 下移工作区" "chevron-down" &
         action="focus-workspace-down"
         ;;
       fullscreen)
+        notify_toast "⛶ 切换全屏" "maximize" &
         action="fullscreen-window"
         ;;
       maximize)
+        notify_toast "🗖 最大化列" "arrows-maximize" &
         action="maximize-column"
         ;;
     esac

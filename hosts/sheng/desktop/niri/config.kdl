@@ -102,12 +102,18 @@ animations {
         spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
     }
     window-open {
-        duration-ms 140
+        duration-ms 180
         curve "ease-out-expo"
     }
     window-close {
-        duration-ms 120
+        duration-ms 150
         curve "ease-out-quad"
+    }
+    window-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+    window-resize {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
     }
 }
 
