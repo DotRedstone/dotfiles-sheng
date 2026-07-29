@@ -222,6 +222,10 @@ let
       -m 1000 \
       -r 20 \
       -t 220 \
+      -g "1,LR,L,*,R,$action back" \
+      -g "1,RL,R,*,R,$action back" \
+      -g "2,LR,L,*,R,$action back" \
+      -g "2,RL,R,*,R,$action back" \
       -g "1,DU,T,*,R,$action close" \
       -g "2,DU,T,*,R,$action close" \
       -g "1,UD,B,*,R,$action fullscreen" \
