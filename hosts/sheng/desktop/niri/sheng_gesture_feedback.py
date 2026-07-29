@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import math
+import json
 import os
 import socket
 
@@ -10,7 +11,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Gdk", "4.0")
 gi.require_version("Gtk4LayerShell", "1.0")
 
-from gi.repository import Gdk, GLib, Gtk, Gtk4LayerShell
+from gi.repository import Gdk, GLib, Gtk, Gtk4LayerShell  # noqa: E402
 
 
 EVENTS = {
@@ -48,6 +49,10 @@ class Indicator:
         self.edge = edge
         self.timeout_id = 0
         self.started_us = 0
+        self.start_margin = 2
+        self.start_opacity = 0
+        self.progress = 0
+        self.phase = "idle"
 
         self.window = Gtk.Window()
         self.window.set_decorated(False)
@@ -58,11 +63,13 @@ class Indicator:
         Gtk4LayerShell.init_for_window(self.window)
         Gtk4LayerShell.set_namespace(self.window, "sheng-gesture-feedback")
         Gtk4LayerShell.set_layer(self.window, Gtk4LayerShell.Layer.OVERLAY)
-        Gtk4LayerShell.set_keyboard_mode(
-            self.window, Gtk4LayerShell.KeyboardMode.NONE
-        )
+        Gtk4LayerShell.set_keyboard_mode(self.window, Gtk4LayerShell.KeyboardMode.NONE)
         Gtk4LayerShell.set_exclusive_zone(self.window, 0)
         Gtk4LayerShell.set_anchor(self.window, EDGE_MAP[edge], True)
+        if edge in ("left", "right"):
+            Gtk4LayerShell.set_anchor(self.window, Gtk4LayerShell.Edge.TOP, True)
+        else:
+            Gtk4LayerShell.set_anchor(self.window, Gtk4LayerShell.Edge.LEFT, True)
 
         self.frame = Gtk.Box()
         self.frame.add_css_class("gesture-feedback")
@@ -76,30 +83,65 @@ class Indicator:
         self.frame.append(self.icon)
         self.window.set_child(self.frame)
 
-    def show(self, icon_name):
+    def set_position(self, position):
+        display = Gdk.Display.get_default()
+        monitors = display.get_monitors()
+        if monitors.get_n_items() == 0:
+            return
+        geometry = monitors.get_item(0).get_geometry()
+        if self.edge in ("left", "right"):
+            span = max(1, geometry.height - WINDOW_SIZES[self.edge][1])
+            margin = round(16 + position * max(0, span - 32))
+            Gtk4LayerShell.set_margin(self.window, Gtk4LayerShell.Edge.TOP, margin)
+        else:
+            span = max(1, geometry.width - WINDOW_SIZES[self.edge][0])
+            margin = round(16 + position * max(0, span - 32))
+            Gtk4LayerShell.set_margin(self.window, Gtk4LayerShell.Edge.LEFT, margin)
+
+    def apply_progress(self, progress):
+        self.progress = max(0, min(progress, 1))
+        eased = 1 - pow(1 - self.progress, 3)
+        margin = round(2 + 20 * eased)
+        Gtk4LayerShell.set_margin(self.window, EDGE_MAP[self.edge], margin)
+        self.window.set_opacity(0.24 + 0.76 * eased)
+        self.icon.set_pixel_size(round(24 + 8 * eased))
+        if self.progress >= 1:
+            self.frame.add_css_class("gesture-feedback-ready")
+        else:
+            self.frame.remove_css_class("gesture-feedback-ready")
+
+    def update(self, icon_name, progress, position):
         if self.timeout_id:
             GLib.source_remove(self.timeout_id)
             self.timeout_id = 0
 
         self.icon.set_from_icon_name(icon_name)
-        self.started_us = GLib.get_monotonic_time()
-        self.window.set_opacity(0)
-        Gtk4LayerShell.set_margin(self.window, EDGE_MAP[self.edge], 2)
+        self.set_position(position)
         self.window.present()
+        self.phase = "tracking"
+        self.apply_progress(progress)
+
+    def finish(self, committed):
+        if self.timeout_id:
+            GLib.source_remove(self.timeout_id)
+        self.phase = "commit" if committed else "cancel"
+        self.start_margin = round(2 + 20 * self.progress)
+        self.start_opacity = self.window.get_opacity()
+        self.started_us = GLib.get_monotonic_time()
         self.timeout_id = GLib.timeout_add(16, self.animate)
 
     def animate(self):
         elapsed_ms = (GLib.get_monotonic_time() - self.started_us) / 1000
-        progress = min(elapsed_ms / 460, 1)
+        duration = 280 if self.phase == "commit" else 190
+        progress = min(elapsed_ms / duration, 1)
+        eased = 1 - pow(1 - progress, 3)
 
-        if progress < 0.28:
-            phase = progress / 0.28
-            opacity = 1 - pow(1 - phase, 3)
+        if self.phase == "commit":
+            margin = self.start_margin + round(10 * math.sin(math.pi * progress))
+            opacity = self.start_opacity * (1 - progress * progress)
         else:
-            phase = (progress - 0.28) / 0.72
-            opacity = 1 - phase * phase
-
-        margin = round(2 + 16 * math.sin(math.pi * progress))
+            margin = round(self.start_margin * (1 - eased))
+            opacity = self.start_opacity * (1 - eased)
         Gtk4LayerShell.set_margin(self.window, EDGE_MAP[self.edge], margin)
         self.window.set_opacity(max(0, min(opacity, 1)))
 
@@ -133,9 +175,13 @@ class FeedbackApp(Gtk.Application):
             .gesture-feedback {
               min-width: 48px;
               min-height: 48px;
-              background: rgba(8, 10, 35, 0.94);
-              border: 2px solid rgba(154, 148, 255, 0.86);
+              background: @surface;
+              border: 2px solid @outline;
               border-radius: 8px;
+            }
+            .gesture-feedback-ready {
+              background: @primary;
+              border-color: @primary;
             }
             .gesture-feedback-left {
               border-left-width: 0;
@@ -150,9 +196,18 @@ class FeedbackApp(Gtk.Application):
               border-bottom-width: 0;
             }
             .gesture-feedback-icon {
-              color: #fff27a;
+              color: @on_surface;
             }
-            """
+            .gesture-feedback-ready .gesture-feedback-icon {
+              color: @on_primary;
+            }
+            """.replace(
+                "@surface", self.theme_color("mSurface", "rgba(8, 10, 35, 0.94)")
+            )
+            .replace("@outline", self.theme_color("mOutline", "#9a94ff"))
+            .replace("@primary", self.theme_color("mPrimary", "#fff27a"))
+            .replace("@on_surface", self.theme_color("mOnSurface", "#f4f2ff"))
+            .replace("@on_primary", self.theme_color("mOnPrimary", "#211f2a"))
         )
         Gtk.StyleContext.add_provider_for_display(
             Gdk.Display.get_default(),
@@ -178,16 +233,54 @@ class FeedbackApp(Gtk.Application):
         GLib.io_add_watch(self.sock.fileno(), GLib.IO_IN, self.on_message)
         self.hold()
 
+    def theme_color(self, name, fallback):
+        path = os.path.expanduser("~/.config/noctalia/colors.json")
+        try:
+            with open(path, encoding="utf-8") as colors_file:
+                colors = json.load(colors_file)
+            return colors.get("dark", {}).get(name, fallback)
+        except (OSError, ValueError, TypeError):
+            return fallback
+
     def on_message(self, _fd, _condition):
         try:
-            event = self.sock.recv(128).decode("ascii", errors="ignore").strip()
+            message = self.sock.recv(512).decode("ascii", errors="ignore").strip()
         except BlockingIOError:
             return GLib.SOURCE_CONTINUE
 
+        try:
+            payload = json.loads(message)
+        except ValueError:
+            payload = None
+
+        if isinstance(payload, dict):
+            event = payload.get("event", "")
+            target = EVENTS.get(event)
+            if not target:
+                return GLib.SOURCE_CONTINUE
+            edge, icon_name = target
+            indicator = self.indicators[edge]
+            phase = payload.get("phase", "update")
+            if phase in ("begin", "update"):
+                indicator.update(
+                    icon_name,
+                    float(payload.get("progress", 0)),
+                    float(payload.get("position", 0.5)),
+                )
+            elif phase == "commit":
+                indicator.update(icon_name, 1, float(payload.get("position", 0.5)))
+                indicator.finish(True)
+            elif phase == "cancel":
+                indicator.finish(False)
+            return GLib.SOURCE_CONTINUE
+
+        event = message
         target = EVENTS.get(event)
         if target:
             edge, icon_name = target
-            self.indicators[edge].show(icon_name)
+            indicator = self.indicators[edge]
+            indicator.update(icon_name, 1, 0.5)
+            indicator.finish(True)
         return GLib.SOURCE_CONTINUE
 
     def do_shutdown(self):

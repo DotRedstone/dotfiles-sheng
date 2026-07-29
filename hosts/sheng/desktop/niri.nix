@@ -19,6 +19,10 @@ let
     ]
   );
 
+  touchPython = pkgs.python3.withPackages (pythonPackages: [
+    pythonPackages.evdev
+  ]);
+
   oskTypelibPath = lib.makeSearchPath "lib/girepository-1.0" (
     map lib.getLib [
       pkgs.at-spi2-core
@@ -94,6 +98,23 @@ let
         --set LD_PRELOAD "${lib.getLib pkgs.gtk4-layer-shell}/lib/libgtk4-layer-shell.so" \
         --prefix GI_TYPELIB_PATH : "${oskTypelibPath}" \
         "''${gappsWrapperArgs[@]}"
+    '';
+  };
+
+  niriTouchDaemon = pkgs.stdenvNoCC.mkDerivation {
+    pname = "sheng-niri-touch-gestures";
+    version = "2.0.0";
+    src = ./niri/sheng_touch_gestures.py;
+    dontUnpack = true;
+
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm644 "$src" "$out/libexec/sheng_touch_gestures.py"
+      makeWrapper ${touchPython}/bin/python3 "$out/bin/sheng-niri-touch-gestures" \
+        --add-flags "$out/libexec/sheng_touch_gestures.py"
+      runHook postInstall
     '';
   };
 
@@ -362,7 +383,9 @@ let
       exit 0
     fi
 
-    show_feedback "$1"
+    if [ "''${SHENG_GESTURE_FEEDBACK:-1}" != 0 ]; then
+      show_feedback "$1"
+    fi
 
     case "$1" in
       back|back-left|back-right)
@@ -439,26 +462,10 @@ let
   '';
 
   niriTouchGestures = pkgs.writeShellScriptBin "sheng-niri-touch-gestures" ''
-    set -eu
-
-    export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-wayland-1}"
-    action=${niriTouchAction}/bin/sheng-niri-touch-action
-
-    exec ${pkgs.lisgd}/bin/lisgd \
-      -d /dev/input/touchscreen \
-      -w 3048 \
-      -h 2032 \
-      -m 1200 \
-      -r 25 \
-      -s 2 \
-      -t 160 \
-      -g "1,LR,L,*,R,$action back-left" \
-      -g "1,RL,R,*,R,$action back-right" \
-      -g "1,DU,B,M,R,$action recents" \
-      -g "1,DU,B,S,R,$action home" \
-      -g "1,RL,B,*,R,$action column-right" \
-      -g "1,LR,B,*,R,$action column-left" \
-      -g "1,UD,T,*,R,$action control-center"
+    exec ${niriTouchDaemon}/bin/sheng-niri-touch-gestures \
+      --device /dev/input/touchscreen \
+      --action ${niriTouchAction}/bin/sheng-niri-touch-action \
+      --niri ${pkgs.niri}/bin/niri
   '';
 
   displayControls = pkgs.writeScript "sheng-niri-display-controls" ''
@@ -693,7 +700,6 @@ in
     imagemagick
     jq
     libnotify
-    lisgd
     niriDisplay
     niriGestureFeedback
     niriLock
