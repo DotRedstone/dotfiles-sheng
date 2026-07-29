@@ -65,6 +65,38 @@ let
     '';
   };
 
+  niriGestureFeedback = pkgs.stdenvNoCC.mkDerivation {
+    pname = "sheng-niri-gesture-feedback";
+    version = "1.0.0";
+    src = ./niri/sheng_gesture_feedback.py;
+    dontUnpack = true;
+
+    nativeBuildInputs = [
+      pkgs.makeWrapper
+      pkgs.wrapGAppsHook4
+    ];
+    buildInputs = [
+      pkgs.gtk4
+      pkgs.gtk4-layer-shell
+    ];
+    dontWrapGApps = true;
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm644 "$src" "$out/libexec/sheng_gesture_feedback.py"
+      mkdir -p "$out/bin"
+      runHook postInstall
+    '';
+
+    preFixup = ''
+      makeWrapper ${oskPython}/bin/python3 "$out/bin/sheng-niri-gesture-feedback" \
+        --add-flags "$out/libexec/sheng_gesture_feedback.py" \
+        --set LD_PRELOAD "${lib.getLib pkgs.gtk4-layer-shell}/lib/libgtk4-layer-shell.so" \
+        --prefix GI_TYPELIB_PATH : "${oskTypelibPath}" \
+        "''${gappsWrapperArgs[@]}"
+    '';
+  };
+
   regreetSession = pkgs.writeShellScript "sheng-regreet-session" ''
     set -eu
 
@@ -292,21 +324,31 @@ let
   niriTouchAction = pkgs.writeShellScriptBin "sheng-niri-touch-action" ''
     set -eu
 
+    runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
+    feedback_socket="$runtime_dir/sheng-niri-gesture-feedback.sock"
+
+    show_feedback() {
+      if [ -S "$feedback_socket" ]; then
+        printf '%s\n' "$1" |
+          ${pkgs.socat}/bin/socat -u - "UNIX-SENDTO:$feedback_socket" >/dev/null 2>&1 || true
+      fi
+    }
+
     case "''${1:-}" in
       launcher)
         exec ${lib.getExe config.programs.noctalia.package} msg panel-toggle launcher
         ;;
       control-center)
+        show_feedback control-center
         exec ${lib.getExe config.programs.noctalia.package} msg panel-toggle control-center
         ;;
-      back|home|recents|column-left|column-right|workspace-up|workspace-down|overview|close|fullscreen|maximize)
+      back|back-left|back-right|home|recents|column-left|column-right|workspace-up|workspace-down|overview|close|fullscreen|maximize)
         ;;
       *)
         exit 2
         ;;
     esac
 
-    runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
     socket="''${NIRI_SOCKET:-}"
     if [ -z "$socket" ]; then
       socket="$(
@@ -320,8 +362,10 @@ let
       exit 0
     fi
 
+    show_feedback "$1"
+
     case "$1" in
-      back)
+      back|back-left|back-right)
         overview_state="$(
           NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg --json overview-state 2>/dev/null ||
             printf '{"is_open":false}'
@@ -402,12 +446,14 @@ let
 
     exec ${pkgs.lisgd}/bin/lisgd \
       -d /dev/input/touchscreen \
+      -w 3048 \
+      -h 2032 \
       -m 1200 \
       -r 25 \
       -s 2 \
       -t 160 \
-      -g "1,LR,L,*,R,$action back" \
-      -g "1,RL,R,*,R,$action back" \
+      -g "1,LR,L,*,R,$action back-left" \
+      -g "1,RL,R,*,R,$action back-right" \
       -g "1,DU,B,M,R,$action recents" \
       -g "1,DU,B,S,R,$action home" \
       -g "1,RL,B,*,R,$action column-right" \
@@ -649,6 +695,7 @@ in
     libnotify
     lisgd
     niriDisplay
+    niriGestureFeedback
     niriLock
     niriOsk
     niriOskToggle
@@ -776,11 +823,28 @@ in
     description = "Handle touchscreen gestures in the sheng Niri session";
     wantedBy = [ "niri.service" ];
     partOf = [ "niri.service" ];
-    after = [ "niri.service" ];
+    after = [
+      "niri.service"
+      "sheng-niri-gesture-feedback.service"
+    ];
     serviceConfig = {
       ExecStart = "${niriTouchGestures}/bin/sheng-niri-touch-gestures";
       Restart = "on-failure";
       RestartSec = 2;
+    };
+  };
+
+  systemd.user.services.sheng-niri-gesture-feedback = {
+    description = "Show animated feedback for sheng touchscreen gestures";
+    wantedBy = [ "niri.service" ];
+    partOf = [ "niri.service" ];
+    after = [ "niri.service" ];
+    before = [ "sheng-niri-touch-gestures.service" ];
+    environment.GSK_RENDERER = "cairo";
+    serviceConfig = {
+      ExecStart = "${niriGestureFeedback}/bin/sheng-niri-gesture-feedback";
+      Restart = "on-failure";
+      RestartSec = 1;
     };
   };
 }
