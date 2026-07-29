@@ -31,6 +31,12 @@ output "DSI-1" {
     }
 }
 
+environment {
+    // GTK uses Wayland text-input-v3 directly; the legacy module triggers an
+    // Fcitx diagnostic and can interfere with native input method handling.
+    GTK_IM_MODULE null
+}
+
 layout {
     gaps 12
     center-focused-column "on-overflow"

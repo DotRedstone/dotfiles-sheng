@@ -529,6 +529,7 @@ in
       ExecStart = "${config.i18n.inputMethod.package}/bin/fcitx5 --replace";
       Restart = "on-failure";
       RestartSec = 2;
+      UnsetEnvironment = "GTK_IM_MODULE";
     };
   };
 
