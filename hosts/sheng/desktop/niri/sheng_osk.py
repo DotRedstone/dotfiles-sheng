@@ -186,7 +186,8 @@ class FcitxVirtualKeyboard(ServiceInterface):
 
     @method()
     def HideVirtualKeyboard(self):
-        GLib.idle_add(self.application.hide_keyboard, "focus")
+        if not self.application.consume_transient_hide():
+            GLib.idle_add(self.application.hide_keyboard, "focus")
 
     @method()
     def UpdatePreeditCaret(self, caret: "i"):
@@ -263,6 +264,7 @@ class ShengOsk(Gtk.Application):
         self.priming = False
         self.primed = False
         self.prime_attempts = 0
+        self.ignore_hide_token = 0
 
     @property
     def state_path(self):
@@ -767,13 +769,28 @@ class ShengOsk(Gtk.Application):
                 button.add_css_class("current")
             button.connect(
                 "clicked",
-                lambda _button, index=index: self.backend_call(
-                    "SelectCandidate", "i", [index]
-                ),
+                lambda _button, index=index: self.select_candidate(index),
             )
             self.candidate_box.append(button)
         self.previous_button.set_sensitive(has_previous)
         self.next_button.set_sensitive(has_next)
+        return GLib.SOURCE_REMOVE
+
+    def select_candidate(self, index):
+        self.ignore_hide_token += 1
+        token = self.ignore_hide_token
+        self.backend_call("SelectCandidate", "i", [index])
+        GLib.timeout_add(900, self.expire_transient_hide, token)
+
+    def consume_transient_hide(self):
+        if self.ignore_hide_token == 0:
+            return False
+        self.ignore_hide_token = 0
+        return True
+
+    def expire_transient_hide(self, token):
+        if self.ignore_hide_token == token:
+            self.ignore_hide_token = 0
         return GLib.SOURCE_REMOVE
 
     def set_input_method(self, unique_name):
