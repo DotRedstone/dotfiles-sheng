@@ -132,13 +132,91 @@ let
   niriOskToggle = pkgs.writeShellScriptBin "sheng-niri-osk-toggle" ''
     set -eu
 
-    unit="sheng-niri-osk.service"
-    if ${pkgs.systemd}/bin/systemctl --user is-active --quiet "$unit"; then
-      ${pkgs.systemd}/bin/systemctl --user stop "$unit"
-    else
-      ${pkgs.systemd}/bin/systemd-run --user --collect --unit="$unit" \
-        ${pkgs.wvkbd}/bin/wvkbd-mobintl -L 300
+    exec ${lib.getExe config.programs.noctalia.package} \
+      msg panel-toggle dotredstone/touch-controls:keyboard
+  '';
+
+  niriOskInput = pkgs.writeShellScript "sheng-niri-osk-input" ''
+    set -eu
+
+    export DOTOOL_PIPE="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}/sheng-dotool-pipe"
+    export DOTOOL_KEYBOARD_NAME="Sheng Touch Keyboard"
+    export DOTOOL_XKB_LAYOUT="us"
+    exec ${pkgs.dotool}/bin/dotoold
+  '';
+
+  niriKey = pkgs.writeShellScriptBin "sheng-niri-key" ''
+    set -eu
+
+    if [ "$#" -ne 1 ]; then
+      exit 2
     fi
+
+    token="$1"
+    case "$token" in
+      [a-z]|[0-9])
+        action="key $token"
+        ;;
+      upper-[a-z])
+        action="key shift+''${token#upper-}"
+        ;;
+      backspace|enter|tab|space|left|right|up|down|delete)
+        action="key $token"
+        ;;
+      language)
+        action="key ctrl+space"
+        ;;
+      paste)
+        action="key ctrl+v"
+        ;;
+      comma|dot|minus|equal|left-bracket|right-bracket|apostrophe|semicolon|slash|backslash|grave)
+        case "$token" in
+          left-bracket) key="leftbrace" ;;
+          right-bracket) key="rightbrace" ;;
+          *) key="$token" ;;
+        esac
+        action="key $key"
+        ;;
+      exclam) action="key shift+1" ;;
+      at) action="key shift+2" ;;
+      hash) action="key shift+3" ;;
+      dollar) action="key shift+4" ;;
+      percent) action="key shift+5" ;;
+      caret) action="key shift+6" ;;
+      ampersand) action="key shift+7" ;;
+      asterisk) action="key shift+8" ;;
+      left-paren) action="key shift+9" ;;
+      right-paren) action="key shift+0" ;;
+      underscore) action="key shift+minus" ;;
+      plus) action="key shift+equal" ;;
+      left-brace) action="key shift+leftbrace" ;;
+      right-brace) action="key shift+rightbrace" ;;
+      pipe) action="key shift+backslash" ;;
+      colon) action="key shift+semicolon" ;;
+      double-quote) action="key shift+apostrophe" ;;
+      tilde) action="key shift+grave" ;;
+      less) action="key shift+comma" ;;
+      greater) action="key shift+dot" ;;
+      question) action="key shift+slash" ;;
+      *)
+        exit 2
+        ;;
+    esac
+
+    export DOTOOL_PIPE="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}/sheng-dotool-pipe"
+    if [ ! -p "$DOTOOL_PIPE" ]; then
+      ${pkgs.systemd}/bin/systemctl --user start sheng-niri-osk-input.service
+    fi
+
+    attempt=0
+    while [ "$attempt" -lt 3 ]; do
+      if printf '%s\n' "$action" | ${pkgs.dotool}/bin/dotoolc; then
+        exit 0
+      fi
+      attempt=$((attempt + 1))
+      ${pkgs.coreutils}/bin/sleep 0.04
+    done
+    exit 1
   '';
 
   niriLock = pkgs.writeShellScriptBin "sheng-niri-lock" ''
@@ -475,6 +553,7 @@ in
     '';
   };
   services.kmscon.enable = lib.mkForce false;
+  boot.kernelModules = [ "uinput" ];
   hardware.graphics.enable = true;
 
   environment.systemPackages = with pkgs; [
@@ -487,6 +566,7 @@ in
     niriDisplay
     niriLock
     niriOskToggle
+    niriKey
     niriTouchAction
     niriTouchGestures
     playerctl
@@ -525,12 +605,12 @@ in
 
   services.udev.extraRules = ''
     SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="NVTCapacitiveTouchScreen", GROUP="input", MODE="0660", SYMLINK+="input/touchscreen"
+    KERNEL=="uinput", GROUP="input", MODE="0660", OPTIONS+="static_node=uinput"
   '';
 
   # The upstream helper talks directly to Mutter. Niri gets native display
   # control services below instead.
   systemd.services.fake-tablet-mode.wantedBy = lib.mkForce [ ];
-
 
   systemd.user.services.noctalia = {
     environment = {
@@ -550,6 +630,18 @@ in
       Restart = "on-failure";
       RestartSec = 2;
       UnsetEnvironment = "GTK_IM_MODULE";
+    };
+  };
+
+  systemd.user.services.sheng-niri-osk-input = {
+    description = "Low-latency virtual keyboard input for the Niri touch keyboard";
+    wantedBy = [ "niri.service" ];
+    partOf = [ "niri.service" ];
+    after = [ "niri.service" ];
+    serviceConfig = {
+      ExecStart = niriOskInput;
+      Restart = "on-failure";
+      RestartSec = 1;
     };
   };
 

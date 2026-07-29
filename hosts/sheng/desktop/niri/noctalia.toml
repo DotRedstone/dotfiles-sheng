@@ -4,12 +4,13 @@ clipboard_history_max_entries = 50
 external_ip_enabled = false
 font_family = "Inter"
 launch_apps_as_systemd_services = true
-middle_click_opens_widget_settings = true
 niri_overview_type_to_launch_enabled = true
 polkit_agent = true
 settings_show_advanced = false
 setup_wizard_enabled = false
 telemetry_enabled = false
+
+[accessibility]
 ui_scale = 1.1
 
 [shell.panel]
@@ -56,7 +57,7 @@ capsule_opacity = 0.86
 capsule_padding = 9
 capsule_radius = 9
 center = [ "clock" ]
-end = [ "back_control", "fullscreen_control", "close_window_control", "network", "volume", "brightness", "battery", "control-center", "session" ]
+end = [ "back_control", "fullscreen_control", "close_window_control", "keyboard_control", "network", "volume", "brightness", "battery", "control-center", "session" ]
 margin_edge = 8
 margin_ends = 10
 padding = 11
@@ -80,6 +81,9 @@ type = "dotredstone/touch-controls:fullscreen"
 
 [widget.close_window_control]
 type = "dotredstone/touch-controls:close-window"
+
+[widget.keyboard_control]
+type = "dotredstone/touch-controls:keyboard-toggle"
 
 [widget.network]
 show_label = false
@@ -217,9 +221,9 @@ enabled = false
 
 [plugins]
 enabled = [ "dotredstone/touch-controls" ]
+auto_update = true
 
 [[plugins.source]]
 name = "dotredstone-touch-controls"
 kind = "git"
 location = "https://github.com/DotRedstone/noctalia-touch-controls"
-auto_update = false
