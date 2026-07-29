@@ -56,7 +56,7 @@ capsule_opacity = 0.86
 capsule_padding = 9
 capsule_radius = 9
 center = [ "clock" ]
-end = [ "touch_keyboard", "network", "volume", "brightness", "battery", "control-center", "session" ]
+end = [ "touch_controls", "network", "volume", "brightness", "battery", "control-center", "session" ]
 margin_edge = 8
 margin_ends = 10
 padding = 11
@@ -72,11 +72,8 @@ widget_spacing = 7
 [widget.clock]
 format = "{:%H:%M}"
 
-[widget.touch_keyboard]
-type = "custom_button"
-command = "/run/current-system/sw/bin/sheng-niri-osk-toggle"
-glyph = "keyboard"
-tooltip = "Touch keyboard"
+[widget.touch_controls]
+type = "dotredstone/touch-controls:controls"
 
 [widget.network]
 show_label = false
@@ -211,3 +208,12 @@ path = "color:#101419"
 
 [backdrop]
 enabled = false
+
+[plugins]
+enabled = [ "dotredstone/touch-controls" ]
+
+[[plugins.source]]
+name = "dotredstone-touch-controls"
+kind = "git"
+location = "https://github.com/DotRedstone/noctalia-touch-controls"
+auto_update = false
