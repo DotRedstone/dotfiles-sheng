@@ -176,6 +176,12 @@ button.flat-control {
   border-color: transparent;
 }
 
+button.flat-control.active-key {
+  background: @ACCENT@;
+  border-color: @ACCENT@;
+  color: @ON_ACCENT@;
+}
+
 .resize-edge {
   background: transparent;
 }
