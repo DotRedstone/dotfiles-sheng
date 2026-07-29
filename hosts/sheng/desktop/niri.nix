@@ -8,7 +8,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
@@ -512,15 +511,6 @@ in
   # control services below instead.
   systemd.services.fake-tablet-mode.wantedBy = lib.mkForce [ ];
 
-  programs.noctalia = {
-    package =
-      inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
-        (oldAttrs: {
-          patches = (oldAttrs.patches or [ ]) ++ [
-            ./niri/launcher-touch-fix.patch
-          ];
-        });
-  };
 
   systemd.user.services.noctalia = {
     environment = {
