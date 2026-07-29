@@ -334,8 +334,20 @@ let
             NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg --json focused-window 2>/dev/null ||
               printf 'null'
           )"
-          if printf '%s' "$focused_window" |
-            ${pkgs.jq}/bin/jq -e '.is_fullscreen == true' >/dev/null 2>&1; then
+          focused_output="$(
+            NIRI_SOCKET="$socket" ${pkgs.niri}/bin/niri msg --json focused-output 2>/dev/null ||
+              printf 'null'
+          )"
+          if ${pkgs.jq}/bin/jq -n -e \
+            --argjson window "$focused_window" \
+            --argjson output "$focused_output" \
+            '
+              $window.is_fullscreen == true or
+              (
+                $window.layout.window_size[0] == $output.logical.width and
+                $window.layout.window_size[1] == $output.logical.height
+              )
+            ' >/dev/null 2>&1; then
             action="fullscreen-window"
           else
             exec ${niriKey}/bin/sheng-niri-key app-back
