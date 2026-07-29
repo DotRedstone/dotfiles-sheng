@@ -671,7 +671,7 @@ class ShengOsk(Gtk.Application):
         header.append(self.settings_button)
 
         self.adjust_button = self.make_icon_control_button(
-            "transform-scale-symbolic", "调整位置和大小"
+            "view-fullscreen-symbolic", "调整位置和大小"
         )
         self.adjust_button.connect("clicked", self.toggle_adjust_mode)
         header.append(self.adjust_button)
@@ -716,8 +716,8 @@ class ShengOsk(Gtk.Application):
             ("format-text-bold-symbolic", "字号", "font_size", 16, 23, 1),
             ("zoom-fit-best-symbolic", "边距", "shell_padding", 6, 16, 1),
             (
-                "transform-scale-symbolic",
-                "手柄",
+                "display-brightness-symbolic",
+                "提示",
                 "handle_opacity",
                 0.25,
                 1.0,
@@ -1532,7 +1532,7 @@ class ShengOsk(Gtk.Application):
         if self.adjust_button is not None:
             self.set_control_icon(
                 self.adjust_button,
-                "object-select-symbolic" if active else "transform-scale-symbolic",
+                "object-select-symbolic" if active else "view-fullscreen-symbolic",
                 "完成调整" if active else "调整位置和大小",
             )
             if active:
