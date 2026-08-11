@@ -8,31 +8,28 @@
 let
   gjsOsk = pkgs.stdenvNoCC.mkDerivation {
     pname = "gnome-shell-extension-gjs-osk";
-    version = "375b7db";
+    version = "f2b8f31";
 
-    src = pkgs.fetchurl {
-      url = "https://github.com/Vishram1123/gjs-osk/releases/download/375b7db/gjsosk%40vishram1123_main.zip";
-      hash = "sha256-VXuIOgt046Cy8rf0EctMgBRrGiVAPmKOXmAgX//CMoM=";
+    src = pkgs.fetchFromGitHub {
+      owner = "Vishram1123";
+      repo = "gjs-osk";
+      rev = "f2b8f31e56c611463b746822dee18cfc8c47f287";
+      hash = "sha256-tmhXlRNBYkceHZqIlx0CCfTPVr/pTUWa5Z6hqaqwZno=";
     };
 
     nativeBuildInputs = [
       pkgs.glib
-      pkgs.unzip
     ];
-
-    unpackPhase = ''
-      runHook preUnpack
-      mkdir source
-      unzip "$src" -d source
-      runHook postUnpack
-    '';
 
     installPhase = ''
       runHook preInstall
       uuid="gjsosk@vishram1123.com"
       extension_dir="$out/share/gnome-shell/extensions/$uuid"
       mkdir -p "$extension_dir"
-      cp -r source/* "$extension_dir/"
+      cp -R "$src/$uuid/." "$extension_dir/"
+      chmod -R u+w "$extension_dir"
+      substituteInPlace "$extension_dir/prefs.js" \
+        --replace-fail "{{VERSION}}" "$version"
       glib-compile-schemas "$extension_dir/schemas"
       runHook postInstall
     '';
