@@ -24,7 +24,7 @@
     # 引用 sheng 硬件仓库。普通用户只需要 clone 本仓库，
     # 不需要在本地额外 clone nixos-sheng。
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/2ac766e6d8adb9e9c344baf3e659deeff4dab4c4?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/839ab72f4f41864a8d408988922d6507325510b8?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
@@ -60,7 +60,17 @@
       # 1. GNOME 桌面环境 (使用上游预设)
       # 部署命令: nh os switch ~/dotfiles-sheng -H sheng
       sheng = nixos-sheng.lib.${system}.mkShengGnomeSystem (shengBaseModules ++ [
+        inputs.home-manager.nixosModules.home-manager
         ./hosts/sheng/input-method.nix
+        ({ ... }: {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            extraSpecialArgs = { inherit inputs; };
+            sharedModules = [ inputs.nixvim.homeModules.nixvim ];
+            users.dot = import ./home/dot.nix;
+          };
+        })
       ]);
 
       # 2. KDE Plasma 6 桌面环境
