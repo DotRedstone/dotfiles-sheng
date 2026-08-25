@@ -4,26 +4,34 @@
 # Scope: Home Manager
 # ---
 
-{ config, pkgs, ... }: {
+{ config, lib, osConfig ? null, pkgs, ... }:
+let
+  # The NixOS-integrated tablet profile should remain rebuildable on-device.
+  # Large optional applications stay available through the standalone HM output.
+  isIntegratedSheng =
+    osConfig != null && osConfig.networking.hostName == "sheng";
+in
+{
   imports = [
-    ./apps/minecraft
     ./fonts
     ./gnome
     ./theme
-    ./dev
     ./cli-tools
     ./fish
     ./starship
     ./zellij
-    ./wezterm
     ./firefox
     ./ibus
     ./nautilus
     ./niri
-    ./telegram
-    ./wechat
     ./yazi
     ./nixvim
+  ] ++ lib.optionals (!isIntegratedSheng) [
+    ./apps/minecraft
+    ./dev
+    ./wezterm
+    ./telegram
+    ./wechat
   ];
 
   # Home Manager standalone deployment requires these two values.
