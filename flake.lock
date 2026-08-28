@@ -91,18 +91,18 @@
       },
       "locked": {
         "dir": "nixos",
-        "lastModified": 1787891784,
-        "narHash": "sha256-ezN4QQ2joLb35hh2uiKxVfKF00RprBZf3qIypex6H58=",
+        "lastModified": 1787896105,
+        "narHash": "sha256-0pmJRmCSyABNgTtgSX5RHIee5RcoiULESpheOpIjbfs=",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "882c1253d7adb846154a8d92b40b459664f7c76b",
+        "rev": "dc8e8188843ee38f68553daa7c1fb8978984545a",
         "type": "github"
       },
       "original": {
         "dir": "nixos",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "882c1253d7adb846154a8d92b40b459664f7c76b",
+        "rev": "dc8e8188843ee38f68553daa7c1fb8978984545a",
         "type": "github"
       }
     },
@@ -229,11 +229,11 @@
     "shengKernelSrc": {
       "flake": false,
       "locked": {
-        "lastModified": 1787891461,
-        "narHash": "sha256-U96RPTPuctbtzUxmqcyjW/Av+UO+s/XfyA4cGT/zaoU=",
+        "lastModified": 1787895966,
+        "narHash": "sha256-wPsDCXoZqUdQshLjxGLmZJawFBBDYBgJddULWXMBnWQ=",
         "owner": "DotRedstone",
         "repo": "linux-sheng",
-        "rev": "c4a04048cf0d7142949ab9b2e4ba365e882494fa",
+        "rev": "60d8eeef59c987907e6d743c568b98167b7e9e00",
         "type": "github"
       },
       "original": {
