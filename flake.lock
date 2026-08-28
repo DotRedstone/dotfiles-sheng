@@ -91,18 +91,18 @@
       },
       "locked": {
         "dir": "nixos",
-        "lastModified": 1787697078,
-        "narHash": "sha256-NM+pGIW9jvYtwFsp+kx7rESigTZny+qV82YlL7nKmj0=",
+        "lastModified": 1787891784,
+        "narHash": "sha256-ezN4QQ2joLb35hh2uiKxVfKF00RprBZf3qIypex6H58=",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "839ab72f4f41864a8d408988922d6507325510b8",
+        "rev": "882c1253d7adb846154a8d92b40b459664f7c76b",
         "type": "github"
       },
       "original": {
         "dir": "nixos",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "839ab72f4f41864a8d408988922d6507325510b8",
+        "rev": "882c1253d7adb846154a8d92b40b459664f7c76b",
         "type": "github"
       }
     },
@@ -229,16 +229,16 @@
     "shengKernelSrc": {
       "flake": false,
       "locked": {
-        "lastModified": 1787696933,
-        "narHash": "sha256-LuU45qsVd3kyjG+4Q/Nnhql2yC9sGl4mmfbR8/C9wOs=",
+        "lastModified": 1787891461,
+        "narHash": "sha256-U96RPTPuctbtzUxmqcyjW/Av+UO+s/XfyA4cGT/zaoU=",
         "owner": "DotRedstone",
         "repo": "linux-sheng",
-        "rev": "76fe9785a7f921ab824582d53d4f4ae692db8bca",
+        "rev": "c4a04048cf0d7142949ab9b2e4ba365e882494fa",
         "type": "github"
       },
       "original": {
         "owner": "DotRedstone",
-        "ref": "upgrade/sheng-7.1.8",
+        "ref": "feat/stylus-thp",
         "repo": "linux-sheng",
         "type": "github"
       }
