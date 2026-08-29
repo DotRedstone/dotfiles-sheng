@@ -43,6 +43,7 @@ in
     snapshot
     resources
     gnome-console
+    rnote
   ];
 
   programs.git = {
