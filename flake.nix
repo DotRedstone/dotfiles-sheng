@@ -111,7 +111,13 @@
     # Home Manager 配置：可以通过 `home-manager switch --flake .#dot@sheng` 部署
     homeConfigurations."dot@sheng" = home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
-      extraSpecialArgs = { inherit inputs; };
+      extraSpecialArgs = {
+        inherit inputs;
+        # Standalone Home Manager has no NixOS module graph, so make the
+        # optional integration argument explicit instead of letting the module
+        # system look it up recursively through _module.args.
+        osConfig = null;
+      };
       modules = [
         ./home/dot.nix
         inputs.nixvim.homeModules.nixvim
