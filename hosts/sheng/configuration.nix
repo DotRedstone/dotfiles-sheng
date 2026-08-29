@@ -62,8 +62,8 @@
   # Keep ADB's root shell from resolving ~ to the stale /root clone. Home
   # Manager must run as dot so its profile and generated files keep ownership.
   environment.shellAliases = {
-    nrs = "nh os switch /home/dot/dotfiles-sheng -H sheng";
-    nrs-niri = "nh os switch /home/dot/dotfiles-sheng -H sheng-niri";
+    nrs = "nixos-rebuild switch --flake /home/dot/dotfiles-sheng#sheng";
+    nrs-niri = "nixos-rebuild switch --flake /home/dot/dotfiles-sheng#sheng-niri";
     hms = "${pkgs.util-linux}/bin/runuser -u dot -- ${pkgs.coreutils}/bin/env HOME=/home/dot USER=dot ${pkgs.nh}/bin/nh home switch /home/dot/dotfiles-sheng -c dot@sheng";
   };
 

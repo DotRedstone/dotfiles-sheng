@@ -729,7 +729,7 @@ in
   };
 
   environment.shellAliases = {
-    nrs = lib.mkForce "nh os switch /home/dot/dotfiles-sheng -H sheng-niri";
+    nrs = lib.mkForce "nixos-rebuild switch --flake /home/dot/dotfiles-sheng#sheng-niri";
     hms = lib.mkForce "${pkgs.util-linux}/bin/runuser -u dot -- ${pkgs.coreutils}/bin/env HOME=/home/dot USER=dot ${pkgs.nh}/bin/nh home switch /home/dot/dotfiles-sheng -c dot@sheng-niri";
   };
 
