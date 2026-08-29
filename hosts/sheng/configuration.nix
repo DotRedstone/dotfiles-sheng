@@ -59,12 +59,12 @@
     nix-output-monitor
   ];
 
-  # 覆盖公开 rootfs 里面面向上游开发仓库的旧快捷命令。
-  # 使用时先 cd 到本 dotfiles 仓库，再执行 nrs / hms。
+  # Keep ADB's root shell from resolving ~ to the stale /root clone. Home
+  # Manager must run as dot so its profile and generated files keep ownership.
   environment.shellAliases = {
-    nrs = "nh os switch ~/dotfiles-sheng -H sheng";
-    nrs-niri = "nh os switch ~/dotfiles-sheng -H sheng-niri";
-    hms = "nh home switch ~/dotfiles-sheng -c dot@sheng";
+    nrs = "nh os switch /home/dot/dotfiles-sheng -H sheng";
+    nrs-niri = "nh os switch /home/dot/dotfiles-sheng -H sheng-niri";
+    hms = "${pkgs.util-linux}/bin/runuser -u dot -- ${pkgs.coreutils}/bin/env HOME=/home/dot USER=dot ${pkgs.nh}/bin/nh home switch /home/dot/dotfiles-sheng -c dot@sheng";
   };
 
   # 在 sheng 上先关闭自动 GC。移动端 rootfs 一旦带 ext4 错误启动，

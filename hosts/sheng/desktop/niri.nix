@@ -729,8 +729,8 @@ in
   };
 
   environment.shellAliases = {
-    nrs = lib.mkForce "nh os switch ~/dotfiles-sheng -H sheng-niri";
-    hms = lib.mkForce "nh home switch ~/dotfiles-sheng -c dot@sheng-niri";
+    nrs = lib.mkForce "nh os switch /home/dot/dotfiles-sheng -H sheng-niri";
+    hms = lib.mkForce "${pkgs.util-linux}/bin/runuser -u dot -- ${pkgs.coreutils}/bin/env HOME=/home/dot USER=dot ${pkgs.nh}/bin/nh home switch /home/dot/dotfiles-sheng -c dot@sheng-niri";
   };
 
   environment.etc = {

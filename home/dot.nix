@@ -60,9 +60,9 @@ in
     enable = true;
     enableCompletion = true;
     shellAliases = {
-      nrs = "nh os switch ~/dotfiles-sheng -H sheng";
-      nrs-niri = "nh os switch ~/dotfiles-sheng -H sheng-niri";
-      hms = "nh home switch ~/dotfiles-sheng -c dot@sheng";
+      nrs = "nh os switch /home/dot/dotfiles-sheng -H sheng";
+      nrs-niri = "nh os switch /home/dot/dotfiles-sheng -H sheng-niri";
+      hms = "nh home switch /home/dot/dotfiles-sheng -c dot@sheng";
     };
   };
 
