@@ -24,7 +24,7 @@
     # 引用 sheng 硬件仓库。普通用户只需要 clone 本仓库，
     # 不需要在本地额外 clone nixos-sheng。
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/1d947ecab83a8722e52c8f23bb76f0e055243189?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/5622cd62ebb35f051fd6d56148e7e9b29cf7c817?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
