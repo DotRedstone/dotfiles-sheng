@@ -91,18 +91,18 @@
       },
       "locked": {
         "dir": "nixos",
-        "lastModified": 1788346961,
-        "narHash": "sha256-omOKpFHUsd393dwPSzb0aySWk7kWTCbSkBQsTrwcTn0=",
+        "lastModified": 1788347136,
+        "narHash": "sha256-LuZAP9YcBBpLGw51V/mJOkf9JpBMSGnTXAz3YZE+jis=",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "d06fea05abf30f96bef389cbe9cb90214c1baba3",
+        "rev": "8d59b7bad8d21293a20dfc14ab51451bd0a83023",
         "type": "github"
       },
       "original": {
         "dir": "nixos",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "d06fea05abf30f96bef389cbe9cb90214c1baba3",
+        "rev": "8d59b7bad8d21293a20dfc14ab51451bd0a83023",
         "type": "github"
       }
     },
