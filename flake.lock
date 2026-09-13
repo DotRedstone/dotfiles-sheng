@@ -91,10 +91,10 @@
       },
       "locked": {
         "dir": "nixos",
-        "lastModified": 1789314782,
-        "narHash": "sha256-i/9vaQzdYheJn1NYkZvV8QrkZEx1SFhFeTRMnLZamYA=",
-        "rev": "65b2078bddc586aa015cc42397c075736175a0ca",
-        "revCount": 553,
+        "lastModified": 1789315364,
+        "narHash": "sha256-wH083rt9rDTuMg+65n7JTOcBhbmi9cTn3gnblvzzDsw=",
+        "rev": "f073a2a16a33c70bf6784b522a3591191f455016",
+        "revCount": 554,
         "type": "git",
         "url": "file:///home/dot/nixos-sheng-boot-ui"
       },
