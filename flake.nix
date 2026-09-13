@@ -21,10 +21,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # 引用 sheng 硬件仓库。普通用户只需要 clone 本仓库，
-    # 不需要在本地额外 clone nixos-sheng。
+    # The tablet keeps the platform checkout beside this configuration.  This
+    # makes the Home Manager system build use the same boot UI source that was
+    # flashed to the active slot, rather than silently falling back to the
+    # previous GitHub revision.
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/ada26af73f1050417e7783223e5b9a35aee76d6e?dir=nixos";
+      url = "git+file:///home/dot/nixos-sheng?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
