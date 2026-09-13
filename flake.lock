@@ -96,12 +96,12 @@
         "rev": "65b2078bddc586aa015cc42397c075736175a0ca",
         "revCount": 553,
         "type": "git",
-        "url": "file:///home/dot/nixos-sheng"
+        "url": "file:///home/dot/nixos-sheng-boot-ui"
       },
       "original": {
         "dir": "nixos",
         "type": "git",
-        "url": "file:///home/dot/nixos-sheng"
+        "url": "file:///home/dot/nixos-sheng-boot-ui"
       }
     },
     "nixpkgs": {
