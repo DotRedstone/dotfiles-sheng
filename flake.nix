@@ -26,7 +26,7 @@
     # flashed to the active slot, rather than silently falling back to the
     # previous GitHub revision.
     nixos-sheng = {
-      url = "git+file:///home/dot/nixos-sheng?dir=nixos";
+      url = "git+file:///home/dot/nixos-sheng-boot-ui?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
