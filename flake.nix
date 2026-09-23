@@ -21,12 +21,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # The tablet keeps the platform checkout beside this configuration.  This
-    # makes the Home Manager system build use the same boot UI source that was
-    # flashed to the active slot, rather than silently falling back to the
-    # previous GitHub revision.
+    # Pin the system and Home Manager integration to the same platform source
+    # as the boot image so stage-2 cannot replay an older loading animation.
     nixos-sheng = {
-      url = "git+file:///home/dot/nixos-sheng-boot-ui?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/55fd6c123fab02a9813666258097ab01a6847439?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 

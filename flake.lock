@@ -91,17 +91,19 @@
       },
       "locked": {
         "dir": "nixos",
-        "lastModified": 1789315364,
-        "narHash": "sha256-wH083rt9rDTuMg+65n7JTOcBhbmi9cTn3gnblvzzDsw=",
-        "rev": "f073a2a16a33c70bf6784b522a3591191f455016",
-        "revCount": 554,
-        "type": "git",
-        "url": "file:///home/dot/nixos-sheng-boot-ui"
+        "lastModified": 1790174649,
+        "narHash": "sha256-xEbNaEajK6UCbS7c35p6t+BZcttuvV+Y5KyvifVe27U=",
+        "owner": "DotRedstone",
+        "repo": "nixos-sheng",
+        "rev": "55fd6c123fab02a9813666258097ab01a6847439",
+        "type": "github"
       },
       "original": {
         "dir": "nixos",
-        "type": "git",
-        "url": "file:///home/dot/nixos-sheng-boot-ui"
+        "owner": "DotRedstone",
+        "repo": "nixos-sheng",
+        "rev": "55fd6c123fab02a9813666258097ab01a6847439",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -227,11 +229,11 @@
     "shengKernelSrc": {
       "flake": false,
       "locked": {
-        "lastModified": 1788061761,
-        "narHash": "sha256-U96RPTPuctbtzUxmqcyjW/Av+UO+s/XfyA4cGT/zaoU=",
+        "lastModified": 1790159858,
+        "narHash": "sha256-wYi8eRdqDGy6Ta8K6udnEgjFyANiz4Fk0q53dfyNGSE=",
         "owner": "DotRedstone",
         "repo": "linux-sheng",
-        "rev": "3ca17976c6b4165559b8e25922bbecf31ac84db7",
+        "rev": "c4b27e2cec1371e166f443877812639d4d0d33da",
         "type": "github"
       },
       "original": {
