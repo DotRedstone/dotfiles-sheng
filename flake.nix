@@ -21,10 +21,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Pin the system and Home Manager integration to the same platform source
-    # as the boot image so stage-2 cannot replay an older loading animation.
+    # Pin the platform revision containing both unified boot visuals and
+    # the enlarged, animated offline-charging screen.
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/55fd6c123fab02a9813666258097ab01a6847439?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/7809891a7e2004194a50f68f9048207eedc8f1c5?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
