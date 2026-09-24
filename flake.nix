@@ -21,10 +21,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Pin the platform revision containing both unified boot visuals and
-    # the enlarged, animated offline-charging screen.
+    # Match the flashed boot's persistent mode decision and exclusive display
+    # ownership across boot animation, offline charging, and diagnostics.
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/7809891a7e2004194a50f68f9048207eedc8f1c5?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/f54d28a0e5d28efea49a2a7c716b607447624303?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
