@@ -87,22 +87,23 @@
         "shengFirmware": [
           "shengFirmware"
         ],
-        "shengKernelSrc": "shengKernelSrc"
+        "shengKernelSrc": "shengKernelSrc",
+        "shengUbootSrc": "shengUbootSrc"
       },
       "locked": {
         "dir": "nixos",
-        "lastModified": 1790245893,
-        "narHash": "sha256-DGCAiTw3f+P4/yCSX8vuIqm8/Lm4EVFiL1XUHjlMDZI=",
+        "lastModified": 1791729735,
+        "narHash": "sha256-9+ah1E3lGTLFrLFcB5/MsKs4qG1p4c/bSwDXM94Ffpo=",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "f54d28a0e5d28efea49a2a7c716b607447624303",
+        "rev": "8d86aece1f73285a64d8cf25f2378f351e3b356f",
         "type": "github"
       },
       "original": {
         "dir": "nixos",
         "owner": "DotRedstone",
         "repo": "nixos-sheng",
-        "rev": "f54d28a0e5d28efea49a2a7c716b607447624303",
+        "rev": "8d86aece1f73285a64d8cf25f2378f351e3b356f",
         "type": "github"
       }
     },
@@ -240,6 +241,23 @@
         "owner": "DotRedstone",
         "ref": "upgrade/sheng-7.1.8",
         "repo": "linux-sheng",
+        "type": "github"
+      }
+    },
+    "shengUbootSrc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790028721,
+        "narHash": "sha256-P8/MBaIueMPC5cuCBcWfYLPKDhyZHVwEcEimoYC3tGE=",
+        "owner": "u-boot",
+        "repo": "u-boot",
+        "rev": "a06e89ab05eaa2b8344d521319399333cd760ae5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "u-boot",
+        "repo": "u-boot",
+        "rev": "a06e89ab05eaa2b8344d521319399333cd760ae5",
         "type": "github"
       }
     },

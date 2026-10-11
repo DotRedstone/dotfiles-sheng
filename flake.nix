@@ -21,10 +21,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Match the flashed boot's persistent mode decision and exclusive display
-    # ownership across boot animation, offline charging, and diagnostics.
+    # 实验性 U-Boot EFI 世代菜单与设备端 ESP 自动同步。
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/f54d28a0e5d28efea49a2a7c716b607447624303?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/8d86aece1f73285a64d8cf25f2378f351e3b356f?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
