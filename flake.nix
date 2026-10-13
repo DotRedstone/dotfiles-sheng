@@ -23,7 +23,7 @@
 
     # 实验性 U-Boot EFI 世代菜单与设备端 ESP 自动同步。
     nixos-sheng = {
-      url = "github:DotRedstone/nixos-sheng/8d86aece1f73285a64d8cf25f2378f351e3b356f?dir=nixos";
+      url = "github:DotRedstone/nixos-sheng/057ae7bc594a692e2fb604fc747a32e600132b71?dir=nixos";
       inputs.shengFirmware.follows = "shengFirmware";
     };
 
